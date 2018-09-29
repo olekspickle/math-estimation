@@ -1,15 +1,25 @@
-let sigm = 1;
-let mu = 0;
+let sigm = 1,
+  mu = 0;
+let normalDistributionArray = [];
 const radio = document.getElementsByName("chart");
 const chart = document.querySelector("#chart");
+const current = localStorage.getItem("current") || 0;
+
+//==============================CALCULATIONS===============================================>
 
 const probabilityDensity = function(x) {
   (1 / (sigm * Math.pow(2 * Math.PI, 1 / 2))) *
     Math.exp((-1 * Math.pow(x - mu, 2)) / (2 * Math.pow(sigm, 2)));
 };
 
-//statistical point estimate of mathematical expectation
-function getStandartEstimate() {
+function generate(arr, n) {
+  for (let i = 0; i < n; i++) {
+    arr.push((Math.random() * (-2.1 - 2.1) + 2.1).toFixed(4));
+  }
+  return arr
+}
+
+function getStandartPointEstimate() {
   let sum = [];
   for (let i = 0; i < 100000; i++) {
     sum.push(probabilityDensity(i));
@@ -17,7 +27,13 @@ function getStandartEstimate() {
   return sum;
 }
 
-//statistical interval estimation of mathematical expectation
+function getStandartIntervalEstimate() {
+  let sum = [];
+  for (let i = 0; i < 100000; i++) {
+    sum.push(probabilityDensity(i));
+  }
+  return sum;
+}
 
 /**
  *
@@ -29,41 +45,39 @@ function getDist(a, n) {
   return NORMAL_DISTRIBUTION[n][index];
 }
 
+//===================================CALCULATIONS=============================================<
+
+//=================================DOM_MANIPULATION===========================================>
+function generateHandle() {
+  const myTable = document.getElementsByTagName("table")[0];
+  const n = document.getElementsByName("num")[0]["value"];
+  let rowCount = myTable["rows"].length;
+  while (--rowCount) myTable["deleteRow"](rowCount);
+
+  generate(normalDistributionArray, n);
+  console.log("normalDistributionArray", normalDistributionArray);
+  radio[0].click();
+}
 function getData() {
-  const local = {
-    standart: localStorage.getItem("standart"),
-    first: localStorage.getItem("first"),
-    second: localStorage.getItem("second")
-  };
-
-  // const checks = {
-  //   standart: local.standart || radio.standart["checked"],
-  //   first: local.first || radio.first["checked"],
-  //   second: local.second || radio.second["checked"]
-  // };
-
   let data = {
     fn: `x^2`,
     color: "#8134f8"
-  };;
+  };
   sigm = 1;
   mu = 0;
 
-  if (local.standart || radio[0]["checked"]) {
+  if (radio[0]["checked"]) {
     data = {
       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
       color: "red"
     };
-  }
-
-  if (local.first || radio[1]["checked"]) {
+  } else if (radio[1]["checked"]) {
     data = {
       fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
         mu}) ^ 2) / (2 * 1^ 2))`,
       color: "blue"
     };
-  }
-  if (local.second || radio[2]["checked"]) {
+  } else if (radio[2]["checked"]) {
     data = {
       fn: `(1 / (${7 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${1 *
         mu}) ^ 2) / (2 * 1^ 2))`,
@@ -95,6 +109,19 @@ function render(target, val) {
   });
 }
 
+function submitHandle() {
+  const x1 = document.getElementById("x1")["value"];
+  const x2 = document.getElementById("x2")["value"];
+  const y1 = document.getElementById("y1")["value"];
+  const y2 = document.getElementById("y2")["value"];
+  console.log("submit", x1, x2, y1, y2);
+}
+
+function init() {
+  radio[0]["checked"] = true;
+  render(radio[0], true);
+}
+
 function checkboxListener({ target }) {
   render(target, this["checked"]);
   // localStorage.setItem(`${target.name}`, this["checked"]);
@@ -105,15 +132,11 @@ radio.forEach(function(el) {
   chart["style"].display = "inline";
 });
 
-radio[0]["checked"] = true;
-render(radio[0], true);
+init();
 
+//=================================DOM_MANIPULATION==============================================<
 
-
-
-
-
-//CONSTANTS
+//======================================CONSTANTS================================================>
 
 const NORMAL_DISTRIBUTION = {
   n: [0.7, 0.75, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995, 0.9995],
@@ -152,3 +175,5 @@ const NORMAL_DISTRIBUTION = {
   80: [0.5265, 0.6776, 0.8461, 1.2922, 1.6641, 2.0878, 2.3739, 2.6387, 3.4164],
   120: [0.5258, 0.6765, 0.8446, 1.2886, 1.6576, 2.0763, 2.3578, 2.6174, 3.3734]
 };
+
+//======================================CONSTANTS================================================<
