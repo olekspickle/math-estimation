@@ -1,13 +1,7 @@
-const someArr = [[]];
 let sigm = 1;
 let mu = 0;
-const flags = document.querySelectorAll("input[type=checkbox]");
-const standart = document.querySelector("input[name=standart]");
-const first = document.querySelector("input[name=first]");
-const second = document.querySelector("input[name=second]");
-
-const chart = document.getElementById("chart");
-const width = window.innerWidth;
+const radio = document.getElementsByName("chart");
+const chart = document.querySelector("#chart");
 
 const probabilityDensity = function(x) {
   (1 / (sigm * Math.pow(2 * Math.PI, 1 / 2))) *
@@ -25,37 +19,70 @@ function getStandartEstimate() {
 
 //statistical interval estimation of mathematical expectation
 
-function render(target, val) {
-  let sigm = 1;
-  let mu = 0;
-  const data = [];
-  console.log(target, val);
+/**
+ *
+ * @param a poziom kwantyla
+ * @param n Liczba stopni swobody
+ */
+function getDist(a, n) {
+  const index = NORMAL_DISTRIBUTION["n"].indexOf(a);
+  return NORMAL_DISTRIBUTION[n][index];
+}
 
-  if ((target.name === "standart" && val) || standart["checked"]) {
-    data.push({
+function getData() {
+  const local = {
+    standart: localStorage.getItem("standart"),
+    first: localStorage.getItem("first"),
+    second: localStorage.getItem("second")
+  };
+
+  // const checks = {
+  //   standart: local.standart || radio.standart["checked"],
+  //   first: local.first || radio.first["checked"],
+  //   second: local.second || radio.second["checked"]
+  // };
+
+  let data = {
+    fn: `x^2`,
+    color: "#8134f8"
+  };;
+  sigm = 1;
+  mu = 0;
+
+  if (local.standart || radio[0]["checked"]) {
+    data = {
       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
       color: "red"
-    });
+    };
   }
-  if ((target.name === "first" && val) || first["checked"]) {
-    data.push({
-      fn: `(1 / (${0.5} * sqrt(2 * PI))) * exp((-1 * (x-${0.4}) ^ 2) / (2 * 1^ 2))`,
+
+  if (local.first || radio[1]["checked"]) {
+    data = {
+      fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
+        mu}) ^ 2) / (2 * 1^ 2))`,
       color: "blue"
-    });
+    };
   }
-  if ((target.name === "second" && val) || second["checked"]) {
-    data.push({
-      fn: `(1 / (${7} * sqrt(2 * PI))) * exp((-1 * (x-${1}) ^ 2) / (2 * 1^ 2))`,
+  if (local.second || radio[2]["checked"]) {
+    data = {
+      fn: `(1 / (${7 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${1 *
+        mu}) ^ 2) / (2 * 1^ 2))`,
       color: "green"
-    });
+    };
   }
+
+  return data;
+}
+
+function render(target, val) {
+  console.log(target, val, chart);
+  const data = getData();
 
   functionPlot({
     target: "#chart",
     grid: true,
-    width: width - 100,
     height: 500,
-    disableZoom: true,
+    // disableZoom: true,
     xAxis: {
       label: "x",
       domain: [-6, 6]
@@ -64,20 +91,31 @@ function render(target, val) {
       label: "y",
       domain: [-1, 1.5]
     },
-    data: data
+    data: [data]
   });
 }
 
-/**
- *
- * @param a poziom kwantyla
- * @param n Liczba stopni swobody
- */
-function getDist(a, n) {
-  const index = normalDestribution["n"].indexOf(a);
-  return normalDestribution[n][index];
+function checkboxListener({ target }) {
+  render(target, this["checked"]);
+  // localStorage.setItem(`${target.name}`, this["checked"]);
 }
-const normalDestribution = {
+radio.forEach(function(el) {
+  chart["style"].display = "none";
+  el.addEventListener("click", checkboxListener);
+  chart["style"].display = "inline";
+});
+
+radio[0]["checked"] = true;
+render(radio[0], true);
+
+
+
+
+
+
+//CONSTANTS
+
+const NORMAL_DISTRIBUTION = {
   n: [0.7, 0.75, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995, 0.9995],
   1: [0.7265, 1.0, 1.3764, 3.0777, 6.3137, 15.894, 31.821, 63.656, 636.58],
   2: [0.6172, 0.8165, 1.0607, 1.8856, 2.92, 4.8487, 6.9645, 9.925, 31.6],
@@ -114,90 +152,3 @@ const normalDestribution = {
   80: [0.5265, 0.6776, 0.8461, 1.2922, 1.6641, 2.0878, 2.3739, 2.6387, 3.4164],
   120: [0.5258, 0.6765, 0.8446, 1.2886, 1.6576, 2.0763, 2.3578, 2.6174, 3.3734]
 };
-
-flags.forEach(function(el) {
-  el.addEventListener("change", function({ target }) {
-    render(target, this["checked"]);
-  });
-});
-
-// const standart = document.querySelector("input[name=standart]");
-standart["checked"] = true;
-render(standart, true);
-
-// const ctx = document.getElementById("myChart");
-// if (ctx) ctx.setAttribute("width", `${width}`);
-
-// const data = {
-//     labels: [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-//     datasets: [
-//       {
-//         label: "standart",
-//         data: getStandartEstimate(),
-//         backgroundColor: ["rgba(255, 60, 86, 0.4)"],
-//         borderColor: ["rgba(255, 206, 86, 0.2)"],
-//         borderWidth: 1
-//       },
-//       {
-//         label: "emmm",
-//         data: [1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3, 2, 1],
-//         backgroundColor: ["rgba(75, 192, 192, 0.2)"],
-//         borderColor: ["rgba(75, 192, 192, 0.2)"],
-//         borderWidth: 1
-//       },
-//       {
-//         label: "wtf",
-//         data: [-1, -2, -3, -4, -5, -6, -7, -8, -7, -6, -5, -4, -3, -2, -1],
-//         backgroundColor: ["rgba(153, 102, 255, 0.2)"],
-//         borderColor: ["rgba(153, 102, 255, 0.2)"],
-//         borderWidth: 1
-//       }
-//     ]
-//   }
-
-//   Chart.pluginService.register({
-//     beforeInit: function(chart) {
-//         // We get the chart data
-//         let data = chart.config.data;
-
-//         // For every dataset ...
-//         for (let i = 0; i < data.datasets.length; i++) {
-
-//             // For every label ...
-//             for (let j = 0; j < data.labels.length; j++) {
-
-//                 // We get the dataset's function and calculate the value
-//                 let fct = data.datasets[i].function,
-//                     x = data.labels[j],
-//                     y = fct(x);
-//                 // Then we add the value to the dataset data
-//                 data.datasets[i].data.push(y);
-//             }
-//         }
-//     }
-// });
-
-// const myChart = new Chart(ctx, {
-//   type: "line",
-//   data: data,
-//   options: {
-//     scales: {
-//       yAxes: [
-//         {
-//           ticks: {
-//             beginAtZero: true
-//           }
-//         }
-//       ]
-//     }
-//   },
-//   config: {
-//     scales: {
-//       xAxes: [{
-//         ticks: {
-//           maxRotation: -90 // angle in degrees
-//         }
-//       }]
-//     }
-//   }
-// });,
