@@ -76,8 +76,7 @@ section h2 {
   justify-content: center;
 }
 #forms form button,
-#forms button,
-nav li button {
+#forms button {
   width: 50%;
   border: none;
   border-radius: 32px;
@@ -93,8 +92,11 @@ nav li button {
   text-align: center;
 }
 #forms form button:hover,
-#forms form button:focus {
+#forms form button:focus,
+#forms button:hover,
+#forms button:focus {
   background-color: #0fb3ff88;
+  transition: 0.5s;
 }
 
 section table {
@@ -118,4 +120,17 @@ section td {
 }
 iframe {
   display: none;
+}
+
+nav li button {
+  background-color: #fff;
+  border: 2px solid #0fb3ff;
+  color: #0fb3ff;
+  font-size: 1.5em;
+  transition: 0.5s;
+}
+nav li button:hover {
+  background-color: #6ff;
+  border: 2px solid #6ff;
+  color: #0fb3ff;
 }

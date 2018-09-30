@@ -72,6 +72,8 @@ function getDist(a, n) {
 //=================================DOM_MANIPULATION===========================================>
 
 function handlePreviousSample() {
+  if (N === 0) return console.log("enter more numbers");
+
   if (currentN === 0) return console.log("no previous samples");
   currentN--;
   nav.sample.innerHTML = `${currentN + 1}`;
@@ -79,6 +81,8 @@ function handlePreviousSample() {
 }
 
 function handleNextSample() {
+  if (N === 0) return console.log("enter more numbers");
+
   if (currentN === N - 1) return console.log("no next samples");
   currentN++;
   nav.sample.innerHTML = `${currentN + 1}`;
@@ -86,6 +90,8 @@ function handleNextSample() {
 }
 
 function handleGenerate() {
+  refreshTable();
+
   data = {
     sigma: document.getElementById("sigma")["value"],
     mu: document.getElementById("mu")["value"],
@@ -102,9 +108,6 @@ function handleGenerate() {
 
   if (N === 0) return console.log("enter more numbers");
 
-  let rowCount = data.table["rows"].length;
-  while (--rowCount) data.table["deleteRow"](rowCount);
-
   generatedNumbers.length = 0;
   for (let i = 0; i < N; i++) {
     generatedNumbers.push(generate([], data.n));
@@ -114,11 +117,20 @@ function handleGenerate() {
   nav.radio[0].click();
 }
 
+function refreshTable() {
+  if (data.table) data.table.parentNode.removeChild(data.table);
+
+  const temp = document.getElementsByTagName("template")[0],
+    main = document.getElementsByClassName("main")[0],
+    clon = temp.content.cloneNode(true);
+
+  main.appendChild(clon);
+}
+
 function fillTable(arr) {
   const outerLength = arr.length;
   const innerLength = arr[0].length;
 
-  console.log("outerLength", outerLength, "innerLength", innerLength);
   for (let i = 0; i < outerLength; i++) {
     const tr = data.table.tHead.children[0],
       th = document.createElement("th");
@@ -135,19 +147,20 @@ function fillTable(arr) {
 }
 
 function getData() {
-  let data1,
+  let data1, data2;
+  if (nav.radio[0]["checked"]) {
+    data1 = {
+      fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
+      color: "red"
+    };
     data2 = {
       points: generatedNumbers[currentN],
       graphType: "scatter",
       fnType: "points",
       color: "#8134f8"
     };
-
-  if (nav.radio[0]["checked"]) {
-    data1 = {
-      fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
-      color: "red"
-    };
+    if (!generatedNumbers.length) return [data1];
+    return [data1, data2];
   } else if (nav.radio[1]["checked"]) {
     data1 = {
       fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
@@ -161,9 +174,6 @@ function getData() {
       color: "green"
     };
   }
-
-  if (!generatedNumbers.length) return [data1];
-  return [data1, data2];
 }
 
 function render(target, val) {
