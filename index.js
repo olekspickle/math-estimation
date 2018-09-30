@@ -1,10 +1,32 @@
 let sigm = 1,
-  mu = 0;
-let normalDistributionArray = [];
-const radio = document.getElementsByName("chart");
-const chart = document.querySelector("#chart");
-const current = localStorage.getItem("current") || 0;
+  mu = 0,
+  N = 0,
+  nOfN = 0,
+  alfa = 0.2,
+  currentN = 0,
+  generatedNumbers = [],
+  standartPointEstimation = 0,
+  standartIntervalEstimation = 0;
 
+const calculated = {
+  average: 0
+};
+const nav = {
+  sample: document.getElementById("samples"),
+  back: document.getElementById("previous"),
+  forward: document.getElementById("next"),
+  radio: document.getElementsByName("chart")
+};
+let data = {
+  sigma: document.getElementById("sigma")["value"],
+  mu: document.getElementById("mu")["value"],
+  quantity: document.getElementById("quantity")["value"],
+  n: document.getElementById("n")["value"],
+  alfa: document.getElementById("alfa")["value"],
+  table: document.getElementsByTagName("table")[0]
+};
+
+const chart = document.querySelector("#chart");
 //==============================CALCULATIONS===============================================>
 
 const probabilityDensity = function(x) {
@@ -48,56 +70,91 @@ function getDist(a, n) {
 //===================================CALCULATIONS=============================================<
 
 //=================================DOM_MANIPULATION===========================================>
-function generateHandle() {
-  const myTable = document.getElementsByTagName("table")[0];
-  const n = document.getElementsByName("num")[0]["value"];
-  let rowCount = myTable["rows"].length;
-  while (--rowCount) myTable["deleteRow"](rowCount);
-  
-  normalDistributionArray.length = 0
-  const arr1 = generate(normalDistributionArray, n);
 
-  fillTable(arr1);
-
-  // console.log("normalDistributionArray", normalDistributionArray);
-  radio[0].click();
+function handlePreviousSample() {
+  if (currentN === 0) return console.log("no previous samples");
+  currentN--;
+  nav.sample.innerHTML = `${currentN + 1}`;
+  render();
 }
 
-function fillTable(arr, ) {
-  const l = arr.length;
-  const myTable = document.getElementsByTagName("table")[0];
+function handleNextSample() {
+  if (currentN === N - 1) return console.log("no next samples");
+  currentN++;
+  nav.sample.innerHTML = `${currentN + 1}`;
+  render();
+}
 
-  for (let i = 0; i < l; i++) {
-    const row = myTable.insertRow(i + 1);
-    const x = row.insertCell(0);
-    const y = row.insertCell(1);
-    x.innerHTML = arr[i];
-    y.innerHTML = "0.0";
+function handleGenerate() {
+  data = {
+    sigma: document.getElementById("sigma")["value"],
+    mu: document.getElementById("mu")["value"],
+    quantity: document.getElementById("quantity")["value"],
+    n: document.getElementById("n")["value"],
+    alfa: document.getElementById("alfa")["value"],
+    table: document.getElementsByTagName("table")[0]
+  };
+  N = data.quantity;
+  nOfN = data.n;
+  sigm = data.sigma;
+  mu = data.mu;
+  alfa = data.alfa;
+
+  if (N === 0) return console.log("enter more numbers");
+
+  let rowCount = data.table["rows"].length;
+  while (--rowCount) data.table["deleteRow"](rowCount);
+
+  generatedNumbers.length = 0;
+  for (let i = 0; i < N; i++) {
+    generatedNumbers.push(generate([], data.n));
+  }
+
+  fillTable(generatedNumbers);
+  nav.radio[0].click();
+}
+
+function fillTable(arr) {
+  const outerLength = arr.length;
+  const innerLength = arr[0].length;
+
+  console.log("outerLength", outerLength, "innerLength", innerLength);
+  for (let i = 0; i < outerLength; i++) {
+    const tr = data.table.tHead.children[0],
+      th = document.createElement("th");
+    th.innerHTML = `X${i}`;
+    tr.appendChild(th);
+  }
+  for (let j = 0; j < innerLength; j++) {
+    const row = data.table.insertRow(j + 1);
+    for (let i = 0; i < outerLength; i++) {
+      const cell = row.insertCell(i);
+      cell.innerHTML = arr[i][j];
+    }
   }
 }
 
 function getData() {
-  let data1, data2 = 
-    {
-      points: normalDistributionArray,
-      graphType: 'scatter',
+  let data1,
+    data2 = {
+      points: generatedNumbers[currentN],
+      graphType: "scatter",
       fnType: "points",
       color: "#8134f8"
-    }
-  ;
+    };
 
-  if (radio[0]["checked"]) {
+  if (nav.radio[0]["checked"]) {
     data1 = {
       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
       color: "red"
     };
-  } else if (radio[1]["checked"]) {
+  } else if (nav.radio[1]["checked"]) {
     data1 = {
       fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
         mu}) ^ 2) / (2 * 1^ 2))`,
       color: "blue"
     };
-  } else if (radio[2]["checked"]) {
+  } else if (nav.radio[2]["checked"]) {
     data1 = {
       fn: `(1 / (${7 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${1 *
         mu}) ^ 2) / (2 * 1^ 2))`,
@@ -105,11 +162,11 @@ function getData() {
     };
   }
 
+  if (!generatedNumbers.length) return [data1];
   return [data1, data2];
 }
 
 function render(target, val) {
-  // console.log(target, val, chart);
   const data = getData();
 
   functionPlot({
@@ -124,32 +181,28 @@ function render(target, val) {
     },
     yAxis: {
       label: "y",
-      domain: [-1, 1.5]
+      domain: [-1, 1]
     },
     data: data
   });
 }
 
-function submitHandle() {
-  const x1 = document.getElementById("x1")["value"];
-  const x2 = document.getElementById("x2")["value"];
-  const y1 = document.getElementById("y1")["value"];
-  const y2 = document.getElementById("y2")["value"];
-  console.log("submit", x1, x2, y1, y2);
+function handleCalculate() {
+  console.log("calculate! ooops...");
 }
 
 function init() {
-  radio[0]["checked"] = true;
-  render(radio[0], true);
+  nav.radio[0]["checked"] = true;
+  render(nav.radio[0], true);
 }
 
-function checkboxListener({ target }) {
+function radioListener({ target }) {
   render(target, this["checked"]);
-  // localStorage.setItem(`${target.name}`, this["checked"]);
 }
-radio.forEach(function(el) {
+
+nav.radio.forEach(function(el) {
   chart["style"].display = "none";
-  el.addEventListener("click", checkboxListener);
+  el.addEventListener("click", radioListener);
   chart["style"].display = "inline";
 });
 

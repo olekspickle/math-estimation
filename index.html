@@ -14,58 +14,78 @@
 
 <body>
     <h1>Lets do some math, shall we?</h1>
-    <ul id="ul">
-        <li>
+    <nav>
+        <ul>
+            <li>
 
-            <label><input name="chart" type="radio" value="standart" />Normal distribution</label>
-        </li>
-        <li>
+                <label><input name="chart" type="radio" value="standart" />Wykres rozkladu</label>
+            </li>
+            <li>
 
-            <label><input name="chart" type="radio" value="first" />Estimation</label>
-        </li>
-        <li>
+                <label><input name="chart" type="radio" value="first" />Wykres estymatorow</label>
+            </li>
+            <li>
 
-            <label><input name="chart" type="radio" value="second" />Comparing</label>
-        </li>
-    </ul>
+                <label><input name="chart" type="radio" value="second" />Wszystkie przedialy ufnosci</label>
+            </li>
+        </ul>
+        <h4>Losowanie 1 z <span id="samples">1</span></h4>
+        <ul>
+            <li>
+                <button id="previous" onclick="handlePreviousSample()" type="button" name="previus"><</button>
+            </li>
+            <li>
+                <button id="next" onclick="handleNextSample()" type="button" name="next">></button>
+            </li>
+        </ul>
+    </nav>
     <section>
         <div class="main">
             <div id="forms">
-                <form onsubmit="generateHandle()" target="votar">
+                <form onsubmit="handleGenerate()" target="votar">
+                    <h4>N</h4>
+                    <div>
                         <label>
-                            N <input id="num" type="number" placeholder="0" name="num" maxlength="100" />
+                            &sigma;
+                            <input id="sigma" type="number" step="0.0001" placeholder="0" name="sigma" maxlength="100" />
                         </label>
-                        <button name="generate" type="sumbit">generate</button>
-                    </form>
-                    <form onsubmit="submitHandle()" target="votar">
-                            <label>
-                                X<input id="x1" type="number" placeholder="0" name="x" maxlength="100" />
-                        <input id="x2" type="number" placeholder="0" name="x" maxlength="100" />
-                    </label>
+                        <label>
+                            &#956;
+                            <input id="mu" type="number" step="0.0001" placeholder="0" name="mu" maxlength="100" />
+                        </label></div>
+                    <div>
+                        <label>
+                            sample number(N)
+                            <input id="quantity" type="number" placeholder="0" name="quantity" maxlength="100" />
+                        </label>
+                        <label>
+                            q-ty(n)
+                            <input id="n" type="number" placeholder="0" name="n" maxlength="100" />
+                        </label></div>
                     <label>
-                        Y<input id="y2" type="number" placeholder="0" name="y" maxlength="100" />
-                        <input id="y1" type="number" placeholder="0" name="y" maxlength="100" />
+                        &#945; (alfa)
+                        <input id="alfa" type="number" step="0.001" placeholder="0" name="alfa" maxlength="100" />
                     </label>
-                    <button name="calculate" type="sumbit">calculate</button>
+                    <button name="generate" type="sumbit">generate</button>
                 </form>
+                <button name="calculate" onclick="calculate()" type="button">calculate </button>
+
             </div>
             <div id="chart"></div>
             <table>
-                <tr>
-                    <th>X</th>
-                    <th>Y</th>
-                </tr>
+                <thead>
+                    <tr>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr>
-                        <td>0</td>
-                        <td>0</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </section>
-    
-    
+
+
     <script src="./index.js"></script>
     <iframe name="votar"></iframe>
 </body>
