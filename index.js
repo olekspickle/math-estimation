@@ -4,15 +4,12 @@ let sigm = 1,
   nOfN = 0,
   alfa = 0.2,
   currentN = 0,
-  generatedNumbers = [],
-  standartPointEstimation = 0,
-  standartIntervalEstimation = 0;
+  generatedNumbers = [], // [[x1:string,y1:number],[x2:string,y2:number]...[xn:string,yn:number]]
+  pointEstimations = [], // [[x1:number],[x2:number]...[xn:number]]
+  intervalEstimations = []; // [[x1:number,x2:number],[x1:number,x2:number]...[x1:number,x2:number]]
 
-const calculated = {
-  average: 0
-};
 const nav = {
-  sample: document.getElementById("samples"),
+  sample: document.getElementById("sample"),
   back: document.getElementById("previous"),
   forward: document.getElementById("next"),
   radio: document.getElementsByName("chart")
@@ -23,7 +20,8 @@ let data = {
   quantity: document.getElementById("quantity")["value"],
   n: document.getElementById("n")["value"],
   alfa: document.getElementById("alfa")["value"],
-  table: document.getElementsByTagName("table")[0]
+  table: document.getElementsByTagName("table")[0],
+  samples: document.getElementById("samples")
 };
 
 const chart = document.querySelector("#chart");
@@ -34,37 +32,76 @@ const probabilityDensity = function(x) {
     Math.exp((-1 * Math.pow(x - mu, 2)) / (2 * Math.pow(sigm, 2)));
 };
 
+function gamma(op) {
+  // Lanczos Approximation of the Gamma Function
+  // As described in Numerical Recipes in C (2nd ed. Cambridge University Press, 1992)
+  let z = op + 1;
+  let p = [
+    1.000000000190015,
+    76.18009172947146,
+    -86.50532032941677,
+    24.01409824083091,
+    -1.231739572450155,
+    1.208650973866179e-3,
+    -5.395239384953e-6
+  ];
+  let d1 = Math.sqrt(2 * Math.PI) / z;
+  let d2 = p[0];
+
+  for (let i = 1; i <= 6; ++i) d2 += p[i] / (z + i);
+
+  let d3d4 = Math.exp((z + 0.5) * Math.log(z + 5.5) - z - 5.5);
+  console.log("d1 * d2 * d3d4", d1 * d2 * d3d4);
+
+  return d1 * d2 * d3d4;
+}
+
 function generate(arr, n) {
+  const k = 2.9;
   for (let i = 0; i < n; i++) {
-    arr.push([(Math.random() * (-2.1 - 2.1) + 2.1).toFixed(4), 0]);
+    //random
+    arr.push([
+      (Math.random() * (-k - k) + k + parseFloat(data.mu)).toFixed(4),
+      0
+    ]);
   }
   return arr;
 }
 
-function getStandartPointEstimate() {
-  let sum = [];
-  for (let i = 0; i < 100000; i++) {
-    sum.push(probabilityDensity(i));
-  }
-  return sum;
+function getStaticPointEstimates() {
+  return generatedNumbers.map(el => {
+    const reducer = (sum, current) => sum + parseFloat(current[0]);
+    const s = el.reduce(reducer, 0);
+    return s / el.length;
+  });
 }
 
-function getStandartIntervalEstimate() {
-  let sum = [];
-  for (let i = 0; i < 100000; i++) {
-    sum.push(probabilityDensity(i));
-  }
-  return sum;
+function getStaticIntervalEstimates() {
+  return generatedNumbers.map((el, i) => getInterval(el, i));
 }
 
-/**
- *
- * @param a poziom kwantyla
- * @param n Liczba stopni swobody
- */
-function getDist(a, n) {
-  const index = NORMAL_DISTRIBUTION["n"].indexOf(a);
-  return NORMAL_DISTRIBUTION[n][index];
+function getInterval(arr, i) {
+  //Xavg -static point estimate
+  const avg = pointEstimations[i];
+  const reducer = (sum, curr) => {
+    return sum + Math.pow(parseFloat(curr[0]) - avg, 2);
+  };
+
+  //Xi - Xavg
+  const sqSum = arr.reduce(reducer, 0);
+  //S(x) - unshifted variance estimate
+  const S = sqSum / (nOfN - 1);
+  //T(x)
+  const t =
+    gamma((nOfN + 1) / 2) /
+    (Math.sqrt(nOfN * Math.PI) *
+      gamma(nOfN / 2) *
+      Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
+  console.log("avg, sqSum, S, t", avg, sqSum, S, t);
+
+  const low = avg - (S * t) / Math.sqrt(nOfN);
+  const high = avg + (S * t) / Math.sqrt(nOfN);
+  return [low, high];
 }
 
 //===================================CALCULATIONS=============================================<
@@ -91,14 +128,14 @@ function handleNextSample() {
 
 function handleGenerate() {
   refreshTable();
-
   data = {
     sigma: document.getElementById("sigma")["value"],
     mu: document.getElementById("mu")["value"],
     quantity: document.getElementById("quantity")["value"],
     n: document.getElementById("n")["value"],
     alfa: document.getElementById("alfa")["value"],
-    table: document.getElementsByTagName("table")[0]
+    table: document.getElementsByTagName("table")[0],
+    samples: document.getElementById("samples")
   };
   N = data.quantity;
   nOfN = data.n;
@@ -107,6 +144,7 @@ function handleGenerate() {
   alfa = data.alfa;
 
   if (N === 0) return console.log("enter more numbers");
+  data.samples.innerHTML = `${N}`;
 
   generatedNumbers.length = 0;
   for (let i = 0; i < N; i++) {
@@ -117,26 +155,38 @@ function handleGenerate() {
   nav.radio[0].click();
 }
 
+function handleCalculate() {
+  refreshTable();
+
+  pointEstimations = getStaticPointEstimates();
+  intervalEstimations = getStaticIntervalEstimates();
+  fillCalculatedTable(pointEstimations);
+  render()
+  console.log(
+    "point estimations",
+    pointEstimations,
+    "interval estimations",
+    intervalEstimations
+  );
+}
+
 function refreshTable() {
   if (data.table) data.table.parentNode.removeChild(data.table);
-
   const temp = document.getElementsByTagName("template")[0],
     main = document.getElementsByClassName("main")[0],
     clon = temp.content.cloneNode(true);
-
   main.appendChild(clon);
 }
 
 function fillTable(arr) {
   if (!arr.length || !arr[0].length) return;
-
   const outerLength = arr.length;
   const innerLength = arr[0].length;
 
   for (let i = 0; i < outerLength; i++) {
     const tr = data.table.tHead.children[0],
       th = document.createElement("th");
-    th.innerHTML = `X${i}`;
+    th.innerHTML = `X${i + 1}`;
     tr.appendChild(th);
   }
   for (let j = 0; j < innerLength; j++) {
@@ -145,6 +195,22 @@ function fillTable(arr) {
       const cell = row.insertCell(i);
       cell.innerHTML = arr[i][j];
     }
+  }
+}
+function fillCalculatedTable(arr) {
+  if (!arr.length) return;
+  const length = arr.length;
+
+  for (let i = 0; i < length; i++) {
+    const tr = data.table.tHead.children[0],
+      th = document.createElement("th");
+    th.innerHTML = `X${i + 1}`;
+    tr.appendChild(th);
+  }
+  const row = data.table.insertRow(0);
+  for (let i = 0; i < length; i++) {
+    const cell = row.insertCell(i);
+    cell.innerHTML = arr[i];
   }
 }
 
@@ -164,12 +230,15 @@ function getData() {
     };
     if (N === 0 || !generatedNumbers.length) return [data1];
     return [data1, data2];
-    
   } else if (nav.radio[1]["checked"]) {
+    const x = probabilityDensity(pointEstimations[currentN]);
+    const range = intervalEstimations[currentN];
     data1 = {
-      fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
-        mu}) ^ 2) / (2 * 1^ 2))`,
-      color: "blue"
+      fn: `${x}`,
+      graphType: "scatter",
+      fnType: "points",
+      color: "blue",
+      range: range
     };
   } else if (nav.radio[2]["checked"]) {
     data1 = {
@@ -199,10 +268,6 @@ function render(target, val) {
     },
     data: data
   });
-}
-
-function handleCalculate() {
-  console.log("calculate! ooops...");
 }
 
 function init() {
