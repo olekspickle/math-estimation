@@ -309,8 +309,8 @@ function getData() {
 
 function render(target, val) {
   renderData = getData();
-  
   console.log("data", renderData);
+
   functionPlot({
     target: "#chart",
     title: "Calculation",
@@ -323,7 +323,7 @@ function render(target, val) {
     },
     yAxis: {
       label: "y",
-      domain: [-1, 1]
+      domain: [-0.1, 0.6]
     },
     data: renderData
   });
