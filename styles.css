@@ -140,12 +140,12 @@ iframe {
 a {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 0px;
 }
 a img {
-  width: 50px;
-  height: 50px;
+  width: 10%;
 }
+
 
 
 /* CUSTOM RADIO BUTTONS*/
