@@ -348,7 +348,7 @@ function handleRadio(target) {
       refreshCoordinates();
       break;
     default:
-      yMax = 0.5;
+      yMax = 0.45;
       xMax = 8;
   }
 }
@@ -359,7 +359,7 @@ function render(target, val) {
   //chart width
   const isMobile = data.screen.width < 600;
   const makeWider = xMax + 0.2,
-    height = !isMobile ? 400 : 350;
+    height = isMobile ? 300 : 350;
 
   renderData = getData();
 
@@ -368,7 +368,7 @@ function render(target, val) {
     title: "Calculation",
     grid: true,
     height: height,
-    width: height * 1.2,
+    width: height * 1.45,
     // disableZoom: true,
     xAxis: {
       label: "x",
@@ -376,7 +376,7 @@ function render(target, val) {
     },
     yAxis: {
       label: "y",
-      domain: [-0.1, yMax]
+      domain: [-0.05, yMax]
     },
     data: renderData
   });
