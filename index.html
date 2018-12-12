@@ -1,136 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Math expectation</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:400,500,700"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/d3@3/d3.min.js"></script>
     <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
     <link rel="stylesheet" href="./styles.css" />
 
     <!-- favicon matter -->
-    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicon/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="assets/favicon/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="assets/favicon/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicon/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="assets/favicon/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="assets/favicon/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="assets/favicon/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="assets/favicon/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
-    <link rel="manifest" href="assets/favicon/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="assets/favicon/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="assets/favicon/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="assets/favicon/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="assets/favicon/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="assets/favicon/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="assets/favicon/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="assets/favicon/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="assets/favicon/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/favicon/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="assets/favicon/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="assets/favicon/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="assets/favicon/manifest.json" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta
+      name="msapplication-TileImage"
+      content="assets/favicon/ms-icon-144x144.png"
+    />
+    <meta name="theme-color" content="#ffffff" />
     <!-- favicon matter -->
-</head>
+  </head>
 
-<body>
+  <body>
     <header>
-        <h1>Lets do some math, shall we?</h1>
-        <a href="https://github.com/alexgnatrow/math-estimation">
-            <img alt="github icon" src="assets/github.svg">
-        </a>
+      <h1>Lets do some math, shall we?</h1>
+      <a href="https://github.com/alexgnatrow/math-estimation">
+        <img alt="github icon" src="assets/github.svg" />
+      </a>
     </header>
     <nav>
-        <ul>
-            <li>
-
-                <label class="label">Show chart
-                    <input name="chart" type="radio" value="standart" />
-                    <span class="check"></span>
-                </label>
-            </li>
-            <li>
-
-                <label class="label">Show evaluation estimation
-                    <input name="chart" type="radio" value="first" />
-                    <span class="check"></span>
-                </label>
-            </li>
-            <li>
-
-                <label class="label">Show all evaluations
-                    <input name="chart" type="radio" value="second" />
-                    <span class="check"></span>
-                </label>
-            </li>
-        </ul>
-        <h4>Sample <span id="sample">1</span> from <span id="samples">1</span></h4>
-        <ul class="row">
-            <li>
-                <button id="previous" onclick="handlePreviousSample()" type="button" name="previus"><</button>
-            </li>
-            <li>
-                <button id="next" onclick="handleNextSample()" type="button" name="next">></button>
-            </li>
-            <li>
-                <button id="refresh" onclick="refreshChart()" type="button" name="refresh">&#x21bb;</button>
-            </li>
-        </ul>
+      <ul>
+        <li>
+          <label class="label"
+            >Show chart <input name="chart" type="radio" value="standart" />
+            <span class="check"></span>
+          </label>
+        </li>
+        <li>
+          <label class="label"
+            >Show evaluation estimation
+            <input name="chart" type="radio" value="first" />
+            <span class="check"></span>
+          </label>
+        </li>
+        <li>
+          <label class="label"
+            >Show all evaluations
+            <input name="chart" type="radio" value="second" />
+            <span class="check"></span>
+          </label>
+        </li>
+      </ul>
+      <h4>
+        Sample <span id="sample">1</span> from <span id="samples">1</span>
+      </h4>
+      <ul class="row">
+        <li>
+          <button
+            id="previous"
+            onclick="handlePreviousSample()"
+            type="button"
+            name="previus"
+          >
+            <
+          </button>
+        </li>
+        <li>
+          <button
+            id="next"
+            onclick="handleNextSample()"
+            type="button"
+            name="next"
+          >
+            >
+          </button>
+        </li>
+        <li>
+          <button
+            id="refresh"
+            onclick="refreshChart()"
+            type="button"
+            name="refresh"
+          >
+            &#x21bb;
+          </button>
+        </li>
+      </ul>
     </nav>
     <section>
-        <div class="main">
-            <div id="forms">
-                <form onsubmit="handleGenerate()" target="votar">
-                    <h4>N</h4>
-                    <div>
-                        <label>
-                            &sigma;
-                            <input id="sigma" type="number" step="0.01" placeholder="0" name="sigma" maxlength="100" />
-                        </label>
-                        <label>
-                            &#956;
-                            <input id="mu" type="number" step="0.01" placeholder="0" name="mu" maxlength="100" />
-                        </label>
-                        <label>
-                            &#945; (alfa)
-                            <input id="alfa" type="number" step="0.001" placeholder="0" name="alfa" maxlength="100" />
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            sample number(N)
-                            <input id="quantity" type="number" placeholder="0" name="quantity" maxlength="100" />
-                        </label>
-                        <label>
-                            q-ty(n)
-                            <input id="n" type="number" placeholder="0" name="n" maxlength="100" />
-                        </label></div>
-                    <button name="generate" type="sumbit">generate</button>
-                </form>
-                <button name="calculate" onclick="handleCalculate()" type="button">calculate </button>
-
+      <div class="main">
+        <div id="forms">
+          <form onsubmit="handleGenerate()" target="votar">
+            <h4>N</h4>
+            <div>
+              <label>
+                &sigma;
+                <input
+                  id="sigma"
+                  type="number"
+                  step="0.01"
+                  placeholder="0"
+                  name="sigma"
+                  maxlength="100"
+                />
+              </label>
+              <label>
+                &#956;
+                <input
+                  id="mu"
+                  type="number"
+                  step="0.01"
+                  placeholder="0"
+                  name="mu"
+                  maxlength="100"
+                />
+              </label>
+              <label>
+                &#945; (alfa)
+                <input
+                  id="alfa"
+                  type="number"
+                  step="0.001"
+                  placeholder="0"
+                  name="alfa"
+                  maxlength="100"
+                />
+              </label>
             </div>
-            <div id="chart"></div>
-            <template>
-                <div id="table" style="overflow-y:scroll;">
-                    <table onscroll="handleTableScroll()">
-                        <caption></caption>
-                        <thead>
-                            <tr>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </template>
+            <div>
+              <label>
+                sample number(N)
+                <input
+                  id="quantity"
+                  type="number"
+                  placeholder="0"
+                  name="quantity"
+                  maxlength="100"
+                />
+              </label>
+              <label>
+                q-ty(n)
+                <input
+                  id="n"
+                  type="number"
+                  placeholder="0"
+                  name="n"
+                  maxlength="100"
+                />
+              </label>
+            </div>
+            <button name="generate" type="sumbit">generate</button>
+          </form>
+          <button name="calculate" onclick="handleCalculate()" type="button">
+            calculate
+          </button>
         </div>
+        <div id="chart"></div>
+        <template>
+          <div id="table" style="overflow-y:scroll;">
+            <table onscroll="handleTableScroll()">
+              <caption></caption>
+              <thead>
+                <tr></tr>
+              </thead>
+              <tbody>
+                <tr></tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+      </div>
     </section>
-
 
     <script src="./index.js"></script>
     <iframe name="votar"></iframe>
-</body>
-
+  </body>
 </html>
