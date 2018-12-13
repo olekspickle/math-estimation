@@ -101,6 +101,7 @@ function getStaticPointEstimates() {
 }
 
 function getStaticIntervalEstimates() {
+  // console.log('generatedNumbers', generatedNumbers)
   return generatedNumbers.map((el, i) => getInterval(el, i));
 }
 
@@ -181,6 +182,7 @@ function handleCalculate() {
   refreshAll();
   pointEstimations = getStaticPointEstimates();
   intervalEstimations = getStaticIntervalEstimates();
+  // console.log('interval est', intervalEstimations)
   fillCalculatedTable(pointEstimations);
   render();
 }
@@ -190,6 +192,7 @@ function refreshAll() {
   refreshData();
 }
 function refreshCoordinates() {
+  // console.log('interval est from coordinates', intervalEstimations)
   const reduceX = (max, el) => (max < el[1] ? el[1] : max);
   xMax = intervalEstimations.reduce(reduceX, 0);
   yMax = data.quantity * 0.1 + 1;
@@ -227,10 +230,6 @@ function refreshTable() {
 }
 
 function refreshChart() {
-    div = document.createElement("div"),
-    temp = document.getElementsByTagName("template")[0];
-
-  div.id = "chart";
   if (
     data.graphInstance.root &&
     data.graphInstance.root[0] &&
@@ -238,7 +237,6 @@ function refreshChart() {
   ) {
     data.graphInstance.canvas[0][0].innerHTML = "";
     data.graphInstance.root[0][0].innerHTML = "";
-    
   }
   render();
 }
@@ -289,6 +287,7 @@ function fillCalculatedTable(arr) {
 }
 
 function getIntervalVectors(i, isOne) {
+  // console.log('pointEstimations', pointEstimations, 'intervalEstimations', intervalEstimations)
   let x = pointEstimations[i],
     range = intervalEstimations[i],
     y;
@@ -348,37 +347,32 @@ function handleRadio(target) {
   switch (target.value) {
     case "second":
       refreshCoordinates();
-      refreshChart()
       break;
     case "first":
-      // handleCalculate();
       refreshCoordinates();
-      refreshChart()
       break;
     default:
       yMax = 0.45;
       xMax = 8;
   }
+  refreshChart();
 }
 
-function render(target, val) {
-  if (target) handleRadio(target);
-
+function render() {
   //chart width
   const isMobile = data.screen.width < 600;
   const makeWider = xMax + 0.2,
     height = isMobile ? 300 : 450;
 
   renderData = getData();
-  // console.log("renderData", data.graphInstance.root);
-
+  // console.log("renderData", renderData);
 
   data.graphInstance = functionPlot({
     target: "#chart",
     title: "Calculation",
     grid: true,
     height: height,
-    width: !isMobile && height * 1.45 || 350,
+    width: (!isMobile && height * 1.45) || 350,
     // disableZoom: true,
     xAxis: {
       label: "x",
@@ -394,16 +388,15 @@ function render(target, val) {
 
 function init() {
   nav.radio[0]["checked"] = true;
-  render(nav.radio[0], true);
+  render();
 }
 
 function radioListener({ target }) {
-  render(target, this["checked"]);
+  handleRadio(target);
 }
 
 nav.radio.forEach(function(el) {
   el.addEventListener("click", radioListener);
-  refreshChart();
 });
 
 init();
