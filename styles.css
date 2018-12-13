@@ -71,10 +71,11 @@ main h2 {
 }
 #forms form input {
   font-size: 18px;
-  padding: 10px 10px 10px 5px;
+  padding: 5px 10px;
   display: block;
   width: 70px;
   border: none;
+  text-align: center;
   border-bottom: 1px solid #757575;
 }
 
@@ -269,8 +270,8 @@ a img {
     width: 150px;
   }
   #forms form input {
-    font-size: 18px;
-    padding: 10px 10px 10px 5px;
+    font-size: 16px;
+    padding: 5px 10px;
     display: block;
     width: 40px;
     border: none;

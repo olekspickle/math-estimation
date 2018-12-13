@@ -378,7 +378,7 @@ function render(target, val) {
     title: "Calculation",
     grid: true,
     height: height,
-    width: !isMobile && height * 1.45 || 300,
+    width: !isMobile && height * 1.45 || 350,
     // disableZoom: true,
     xAxis: {
       label: "x",
