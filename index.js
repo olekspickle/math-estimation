@@ -21,9 +21,9 @@ let sigm = 1,
   xMax = 8,
   yMax = 0.6,
   renderData = [],
-  generatedNumbers = [], // [[x1:string,y1:number],[x2:string,y2:number]...[xn:string,yn:number]]
-  pointEstimations = [], // [[x1:number],[x2:number]...[xn:number]]
-  intervalEstimations = []; // [[x1:number,x2:number],[x1:number,x2:number]...[x1:number,x2:number]]
+  generatedNumbers = [], // [{x1:string,y1:number],[x2:string,y2:number]...[xn:string,yn:number]]
+  pointEstimations = [], // [{x1:number],[x2:number]...[xn:number]]
+  intervalEstimations = []; // [{x1:number,x2:number],[x1:number,x2:number]...[x1:number,x2:number]]
 
 const nav = {
   sample: document.getElementById("sample"),
@@ -48,8 +48,221 @@ let data = {
 };
 
 const chart = document.getElementById("chart");
+chart.height = window.innerWIdtht < 600 ? 300 : 350;
+chart.width = window.innerWidth < 600 ? 300 : chart.height * 1.6;
+let Ctx = null;
+if (chart.getContext) {
+  Ctx = chart.getContext("2d");
+  Ctx.clearRect(0, 0, chart.width, chart.height);
+}
+
+const Width = chart.width;
+const Height = chart.height;
 //==============================CANVAS===============================================>
 
+// Returns the right boundary of the logical viewport:
+function MaxX() {
+  return xMax;
+}
+
+// Returns the left boundary of the logical viewport:
+function MinX() {
+  return -xMax;
+}
+
+// Returns the top boundary of the logical viewport:
+function MaxY() {
+  return yMax;
+}
+
+// Returns the bottom boundary of the logical viewport:
+function MinY() {
+  return yMin;
+}
+
+// Returns the physical x-coordinate of a logical x-coordinate:
+function XC(x) {
+  return ((x - MinX()) / (MaxX() - MinX())) * Width;
+}
+
+// Returns the physical y-coordinate of a logical y-coordinate:
+function YC(y) {
+  return Height - ((y - MinY()) / (MaxY() - MinY())) * Height;
+}
+
+/* Rendering functions */
+function Draw() {
+  if (nav.radio[0]["checked"]) {
+    DrawNormal();
+  } else if (nav.radio[1]["checked"]) {
+    DrawOne();
+  } else if (nav.radio[2]["checked"]) {
+    DrawAll();
+  }
+}
+// Clears the canvas, draws the axes and graphs the function F.
+function DrawNormal() {
+  const data2 = eval(probabilityDensity);
+  Ctx.clearRect(0, 0, Width, Height);
+  DrawAxes();
+  Ctx.strokeStyle = "#f00";
+  RenderFunction(data2);
+  Ctx.strokeStyle = "#000";
+}
+
+function DrawOne() {
+  const { vertical, horizontal, data2 } = getIntervalVectors(currentN, true);
+  Ctx.clearRect(0, 0, Width, Height);
+  DrawAxes();
+  drawOneEstimation({ vertical, horizontal, data2 });
+}
+
+function DrawAll() {
+  Ctx.clearRect(0, 0, Width, Height);
+  DrawAxes();
+
+  for (let i = 0; i < pointEstimations.length; i++) {
+    const { vertical, horizontal, data2 } = getIntervalVectors(t);
+    drawOneEstimation({ vertical, horizontal, data2 });
+  }
+}
+
+function getIntervalVectors(i, isOne) {
+  console.log('pointEstimations', pointEstimations, 'intervalEstimations', intervalEstimations)
+  let x = pointEstimations[i],
+    range = intervalEstimations[i],
+    y;
+  if (isOne) y = 1.01 * (1 / (data.sigma * Math.sqrt(2 * Math.PI)));
+  else y = ((yMax - 0.1) / data.quantity) * i;
+
+  const vertical = {
+    line: [{ x, y: MaxY() - 0.05 }, { x, y: 0 }],
+    color: "black"
+  };
+  const horizontal = {
+    line: [{ x: range[0], y }, { x: range[1], y }],
+    color: "red"
+  };
+  const data2 = {
+    points: [{ x, y }, { x: range[0], y }, { x: range[1], y }],
+    color: "blue"
+  };
+  return { vertical, data2, horizontal };
+}
+
+function drawOneEstimation({ vertical, horizontal, data2 }) {
+  //draw vertical
+  Ctx.strokeStyle = vertical.color;
+  Ctx.lineWidth = 1;
+  Ctx.beginPath();
+  Ctx.moveTo(XC(vertical.line[0].x), YC(vertical.line[0].y));
+  Ctx.lineTo(XC(vertical.line[1].x), YC(vertical.line[1].y));
+  Ctx.stroke();
+  //draw horizontal
+  Ctx.strokeStyle = horizontal.color;
+  Ctx.beginPath();
+  Ctx.moveTo(XC(horizontal.line[0].x), YC(horizontal.line[0].y));
+  Ctx.lineTo(XC(horizontal.line[1].x), YC(horizontal.line[1].y));
+  Ctx.stroke();
+  Ctx.strokeStyle = data2.color;
+  Ctx.fillRect(XC(vertical.line[0].x), YC(vertical.line[0].y), 2, 2);
+  Ctx.fillRect(XC(vertical.line[1].x), YC(vertical.line[1].y), 2, 2);
+  Ctx.fillRect(XC(horizontal.line[0].x), YC(horizontal.line[0].y), 2, 2);
+  Ctx.fillRect(XC(horizontal.line[1].x), YC(horizontal.line[1].y), 2, 2);
+  Ctx.strokeStyle = "#000";
+}
+// Returns the distance between ticks on the X axis:
+function XTickDelta() {
+  return 1;
+}
+
+// Returns the distance between ticks on the Y axis:
+function YTickDelta() {
+  return 0.1;
+}
+
+// DrawAxes draws the X ad Y axes, with tick marks.
+function DrawAxes() {
+  Ctx.save();
+  Ctx.lineWidth = 1;
+  // +Y axis
+  Ctx.beginPath();
+  Ctx.moveTo(XC(0), YC(0));
+  Ctx.lineTo(XC(0), YC(MaxY()));
+  Ctx.stroke();
+
+  // -Y axis
+  Ctx.beginPath();
+  Ctx.moveTo(XC(0), YC(0));
+  Ctx.lineTo(XC(0), YC(MinY()));
+  Ctx.stroke();
+
+  // Y axis tick marks
+  var delta = YTickDelta();
+  for (let i = 1; i * delta < MaxY(); ++i) {
+    Ctx.beginPath();
+    Ctx.moveTo(XC(0) - 3, YC(i * delta));
+    Ctx.lineTo(XC(0) + 3, YC(i * delta));
+    Ctx.stroke();
+  }
+
+  var delta = YTickDelta();
+  for (let i = 1; i * delta > MinY(); --i) {
+    Ctx.beginPath();
+    Ctx.moveTo(XC(0) - 3, YC(i * delta));
+    Ctx.lineTo(XC(0) + 3, YC(i * delta));
+    Ctx.stroke();
+  }
+
+  // +X axis
+  Ctx.beginPath();
+  Ctx.moveTo(XC(0), YC(0));
+  Ctx.lineTo(XC(MaxX()), YC(0));
+  Ctx.stroke();
+
+  // -X axis
+  Ctx.beginPath();
+  Ctx.moveTo(XC(0), YC(0));
+  Ctx.lineTo(XC(MinX()), YC(0));
+  Ctx.stroke();
+
+  // X tick marks
+  var delta = XTickDelta();
+  for (let i = 1; i * delta < MaxX(); ++i) {
+    Ctx.beginPath();
+    Ctx.moveTo(XC(i * delta), YC(0) - 5);
+    Ctx.lineTo(XC(i * delta), YC(0) + 5);
+    Ctx.stroke();
+  }
+
+  var delta = XTickDelta();
+  for (let i = 1; i * delta > MinX(); --i) {
+    Ctx.beginPath();
+    Ctx.moveTo(XC(i * delta), YC(0) - 5);
+    Ctx.lineTo(XC(i * delta), YC(0) + 5);
+    Ctx.stroke();
+  }
+  Ctx.restore();
+}
+
+// When rendering, XSTEP determines the horizontal distance between points:
+let XSTEP = (MaxX() - MinX()) / Width;
+
+// RenderFunction(f) renders the input funtion f on the canvas.
+function RenderFunction(f) {
+  let first = true;
+  Ctx.beginPath();
+  for (let x = MinX(); x <= MaxX(); x += XSTEP) {
+    let y = f(x);
+    if (first) {
+      Ctx.moveTo(XC(x), YC(y));
+      first = false;
+    } else {
+      Ctx.lineTo(XC(x), YC(y));
+    }
+  }
+  Ctx.stroke();
+}
 
 //==============================CANVAS===============================================>
 //==============================CALCULATIONS===============================================>
@@ -170,8 +383,8 @@ function handlePreviousSample() {
   if (currentN === 0) return console.log("no previous samples");
   currentN--;
   nav.sample.innerHTML = `${currentN + 1}`;
-  render();
-  
+  // render();
+  Draw();
 }
 
 function handleNextSample() {
@@ -180,8 +393,8 @@ function handleNextSample() {
   if (currentN === N - 1) return console.log("no next samples");
   currentN++;
   nav.sample.innerHTML = `${currentN + 1}`;
-  render();
-  
+  // render();
+  Draw();
 }
 
 function handleGenerate() {
@@ -206,8 +419,8 @@ function handleCalculate() {
   pointEstimations = getStaticPointEstimates();
   intervalEstimations = getStaticIntervalEstimates();
   fillCalculatedTable(pointEstimations);
-  render();
-  
+  // render();
+  Draw();
 }
 
 function refreshAll() {
@@ -215,9 +428,12 @@ function refreshAll() {
   refreshData();
 }
 function refreshCoordinates() {
+  console.log("yMax", yMax, xMax, "interval est", intervalEstimations);
+
   const reduceX = (max, el) => (max < el[1] ? el[1] : max);
   xMax = intervalEstimations.reduce(reduceX, 0);
-  yMax = data.quantity * 0.1 + 1;
+  yMax = +data.quantity * 0.1 + 1;
+  console.log("yMax", yMax, "xMax", xMax);
 }
 
 function refreshData() {
@@ -237,11 +453,10 @@ function refreshData() {
   };
 
   nav.sample.innerHTML = 0;
-  (currentN = 0),
-    (xMax = 8),
-    (yMax = 0.6),
-    (renderData = []),
-    (N = data.quantity);
+  currentN = 0;
+  yMax = 0.6;
+  renderData = [];
+  N = data.quantity;
   nOfN = data.n;
   sigm = data.sigma;
   mu = data.mu;
@@ -258,17 +473,17 @@ function refreshTable() {
 }
 
 function refreshChart() {
-  if (
-    data.graphInstance &&
-    data.graphInstance.root &&
-    data.graphInstance.root[0] &&
-    data.graphInstance.root[0][0]
-  ) {
-    data.graphInstance.canvas[0][0].innerHTML = "";
-    data.graphInstance.root[0][0].innerHTML = "";
-  }
-  render();
-  
+  // if (
+  //   data.graphInstance &&
+  //   data.graphInstance.root &&
+  //   data.graphInstance.root[0] &&
+  //   data.graphInstance.root[0][0]
+  // ) {
+  //   data.graphInstance.canvas[0][0].innerHTML = "";
+  //   data.graphInstance.root[0][0].innerHTML = "";
+  // }
+  // render();
+  Draw();
 }
 
 function fillTable(arr) {
@@ -316,63 +531,6 @@ function fillCalculatedTable(arr) {
   caption.innerHTML = "Average estimation for each sample";
 }
 
-function getIntervalVectors(i, isOne) {
-  // console.log('pointEstimations', pointEstimations, 'intervalEstimations', intervalEstimations)
-  let x = pointEstimations[i],
-    range = intervalEstimations[i],
-    y;
-  if (isOne) y = 1.01 * (1 / (data.sigma * Math.sqrt(2 * Math.PI)));
-  else y = ((yMax - 0.1) / data.quantity) * i;
-
-  const vertical = {
-    points: [[x, yMax - 0.05], [x, 0]],
-    color: "black",
-    fnType: "points",
-    graphType: "polyline"
-  };
-  const data2 = {
-    points: [[x, y], [range[0], y], [range[1], y]],
-    graphType: "scatter",
-    fnType: "points",
-    color: "blue",
-    sampler: "builtIn"
-  };
-  const horizontal = {
-    points: [[range[0], y], [range[1], y]],
-    fnType: "points",
-    color: "red",
-    graphType: "polyline"
-  };
-  return [vertical, data2, horizontal];
-}
-
-function getData() {
-  if (nav.radio[0]["checked"]) {
-    const data1 = {
-      fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
-      color: "red"
-    };
-    const data2 = {
-      points: generatedNumbers[currentN],
-      graphType: "scatter",
-      fnType: "points",
-      color: "#8134f8"
-    };
-    if (N === 0 || !generatedNumbers.length) return [data1];
-    return [data1, data2];
-  } else if (nav.radio[1]["checked"]) {
-    return getIntervalVectors(currentN, true);
-  } else if (nav.radio[2]["checked"]) {
-    const reducer = (sum, current, i) => {
-      const el = getIntervalVectors(i);
-      el.forEach(item => sum.push(item));
-
-      return sum;
-    };
-    return pointEstimations.reduce(reducer, []);
-  }
-}
-
 function handleRadio(target) {
   switch (target.value) {
     case "second":
@@ -387,38 +545,65 @@ function handleRadio(target) {
   }
   refreshChart();
 }
+// function getData() {
+//   if (nav.radio[0]["checked"]) {
+//     const data1 = {
+//       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
+//       color: "red"
+//     };
+//     const data2 = {
+//       points: generatedNumbers[currentN],
+//       graphType: "scatter",
+//       fnType: "points",
+//       color: "#8134f8"
+//     };
+//     if (N === 0 || !generatedNumbers.length) return [data1];
+//     return [data1, data2];
+//   } else if (nav.radio[1]["checked"]) {
+//     return getIntervalVectors(currentN, true);
+//   } else if (nav.radio[2]["checked"]) {
+//     const reducer = (sum, current, i) => {
+//       const el = getIntervalVectors(i);
+//       el.forEach(item => sum.push(item));
 
-function render() {
-  //chart width
-  const isMobile = data.screen.width < 600;
-  const makeWider = xMax + 0.2,
-    height = isMobile ? 300 : 450;
+//       return sum;
+//     };
+//     return pointEstimations.reduce(reducer, []);
+//   }
+// }
 
-  renderData = getData();
-  // console.log("renderData", renderData);
+// function render() {
+//   //chart width
+//   const isMobile = data.screen.width < 600;
+//   const makeWider = xMax + 0.2,
+//     height = isMobile ? 300 : 450;
 
-  data.graphInstance = functionPlot({
-    target: "#chart",
-    title: "Calculation",
-    grid: true,
-    height: height,
-    width: (!isMobile && height * 1.45) || 350,
-    // disableZoom: true,
-    xAxis: {
-      label: "x",
-      domain: [-makeWider, makeWider]
-    },
-    yAxis: {
-      label: "y",
-      domain: [-0.05, yMax]
-    },
-    data: renderData
-  });
-}
+//   renderData = getData();
+//   // console.log("renderData", renderData);
+
+//   data.graphInstance = functionPlot({
+//     target: "#chart",
+//     title: "Calculation",
+//     grid: true,
+//     height: height,
+//     width: (!isMobile && height * 1.45) || 350,
+//     // disableZoom: true,
+//     xAxis: {
+//       label: "x",
+//       domain: [-makeWider, makeWider]
+//     },
+//     yAxis: {
+//       label: "y",
+//       domain: [-0.05, yMax]
+//     },
+//     data: renderData
+//   });
+// }
 
 function init() {
   nav.radio[0]["checked"] = true;
-  render()
+  // render()
+  Draw();
 }
 
 function radioListener({ target }) {
