@@ -367,7 +367,7 @@ function render(target, val) {
   //chart width
   const isMobile = data.screen.width < 600;
   const makeWider = xMax + 0.2,
-    height = isMobile ? 300 : 350;
+    height = isMobile ? 300 : 450;
 
   renderData = getData();
   // console.log("renderData", data.graphInstance.root);
@@ -378,7 +378,7 @@ function render(target, val) {
     title: "Calculation",
     grid: true,
     height: height,
-    width: height * 1.45,
+    width: !isMobile && height * 1.45 || 300,
     // disableZoom: true,
     xAxis: {
       label: "x",
