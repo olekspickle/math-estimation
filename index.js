@@ -42,13 +42,12 @@ let data = {
   mu: document.getElementById("mu")["value"],
   quantity: document.getElementById("quantity")["value"],
   n: document.getElementById("n")["value"],
-  alfa: document.getElementById("alfa")["value"],
-  caption: document.getElementById('caption'),
+  alfa: Number(document.getElementById("alfa")["value"]),
+  caption: document.getElementById("caption"),
   table: document.getElementsByTagName("table")[0],
   tableDiv: document.getElementById("table"),
   samples: document.getElementById("samples")
 };
-
 const chart = document.getElementById("chart");
 //==============================CANVAS===============================================>
 
@@ -138,11 +137,14 @@ function getInterval(arr, i) {
   //S(x) - unshifted variance estimate
   const S = sqSum / (nOfN - 1);
   //T(x)
-  const t =
-    gamma((nOfN + 1) / 2) /
-    (Math.sqrt(nOfN * Math.PI) *
-      gamma(nOfN / 2) *
-      Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
+  const currentAlpfaIndex = alfaArray.indexOf(alfa)
+  console.log('currentAlpfaIndex', currentAlpfaIndex)
+  const t = tArray[nOfN][currentAlpfaIndex]
+  // const t =
+  //   gamma((nOfN + 1) / 2) /
+  //   (Math.sqrt(nOfN * Math.PI) *
+  //     gamma(nOfN / 2) *
+  //     Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
 
   //students deviation
   const SXt = `${(S * t) / Math.sqrt(nOfN)}`;
@@ -295,7 +297,7 @@ function refreshData() {
     mu: document.getElementById("mu")["value"],
     quantity: document.getElementById("quantity")["value"],
     n: document.getElementById("n")["value"],
-    alfa: document.getElementById("alfa")["value"],
+    alfa: Number(document.getElementById("alfa")["value"]),
     table: document.getElementsByTagName("table")[0],
     tableDiv: document.getElementById("table"),
     samples: document.getElementById("samples")
@@ -508,3 +510,33 @@ nav.radio.forEach(function(el) {
 init();
 
 //=================================DOM_MANIPULATION==============================================<
+
+//=====================================CONSTANTS=================================================<
+const alfaArray = [0.8, 0.9, 0.99];
+const tArray = {
+  1: [3.0777, 6.3137, 63.656],
+  2: [1.8856, 2.92, 9.925],
+  3: [1.6377, 2.3534, 5.8408],
+  4: [1.5332, 2.1318, 4.6041],
+  5: [1.4759, 2.015, 4.0321],
+  6: [1.4398, 1.9432, 3.7074],
+  7: [1.4149, 1.8946, 3.4995],
+  8: [1.3968, 1.8595, 3.3554],
+  9: [1.383, 1.8331, 3.2498],
+  10: [1.3722, 1.8125, 3.1693],
+  11: [1.3634, 1.7959, 3.1058],
+  12: [1.3562, 1.7823, 3.0545],
+  13: [1.3502, 1.7709, 3.0123],
+  14: [1.345, 1.7613, 2.9768],
+  15: [1.3406, 1.7531, 2.9467],
+  16: [1.3368, 1.7459, 2.9208],
+  17: [1.3334, 1.7396, 2.8982],
+  18: [1.3304, 1.7341, 2.8784],
+  19: [1.3277, 1.7291, 2.8609],
+  20: [1.3253, 1.7247, 2.8453],
+  21: [1.3232, 1.7207, 2.8314],
+  22: [1.3212, 1.7171, 2.8188],
+  23: [1.3195, 1.7139, 2.8073],
+  24: [1.3178, 1.7109, 2.797],
+  25: [1.3163, 1.7081, 2.7874]
+};
