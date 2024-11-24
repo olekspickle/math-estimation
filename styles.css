@@ -231,10 +231,11 @@ a {
   position: absolute;
   top: 0px;
   right: 0px;
+  width: 10%;
 }
 
 a img {
-  width: 10%;
+  width: 100%
 }
 a:hover{
   opacity: 0.6;
@@ -317,18 +318,9 @@ a:hover{
   flex-direction: row;
 }
 
-@media (min-width: 1330px) {
-  a {
-    right: -10em;
-  }
-}
 @media (max-width: 1330px) {
   a {
     top: 50px;
-    width: 9%;
-  }
-  a img {
-    width: 100%;
   }
 }
 @media (max-width: 780px) {
