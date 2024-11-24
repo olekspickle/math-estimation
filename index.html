@@ -29,18 +29,17 @@
         </li>
     </ul>
     <section>
-        <h2>Calculation</h2>
         <div class="main">
             <div id="forms">
-                <form onsubmit="generateHandle()">
-                    <label>
-                        N <input id="num" type="number" placeholder="0" name="num" maxlength="100" />
-                    </label>
-                    <button name="generate" type="sumbit">generate</button>
-                </form>
-                <form onsubmit="submitHandle()">
-                    <label>
-                        X<input id="x1" type="number" placeholder="0" name="x" maxlength="100" />
+                <form onsubmit="generateHandle()" target="votar">
+                        <label>
+                            N <input id="num" type="number" placeholder="0" name="num" maxlength="100" />
+                        </label>
+                        <button name="generate" type="sumbit">generate</button>
+                    </form>
+                    <form onsubmit="submitHandle()" target="votar">
+                            <label>
+                                X<input id="x1" type="number" placeholder="0" name="x" maxlength="100" />
                         <input id="x2" type="number" placeholder="0" name="x" maxlength="100" />
                     </label>
                     <label>
@@ -61,25 +60,14 @@
                         <td>0</td>
                         <td>0</td>
                     </tr>
-                    <tr>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
     </section>
-
-
+    
+    
     <script src="./index.js"></script>
+    <iframe name="votar"></iframe>
 </body>
 
 </html>

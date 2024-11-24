@@ -14,9 +14,9 @@ const probabilityDensity = function(x) {
 
 function generate(arr, n) {
   for (let i = 0; i < n; i++) {
-    arr.push((Math.random() * (-2.1 - 2.1) + 2.1).toFixed(4));
+    arr.push([(Math.random() * (-2.1 - 2.1) + 2.1).toFixed(4), 0]);
   }
-  return arr
+  return arr;
 }
 
 function getStandartPointEstimate() {
@@ -53,47 +53,68 @@ function generateHandle() {
   const n = document.getElementsByName("num")[0]["value"];
   let rowCount = myTable["rows"].length;
   while (--rowCount) myTable["deleteRow"](rowCount);
+  
+  normalDistributionArray.length = 0
+  const arr1 = generate(normalDistributionArray, n);
 
-  generate(normalDistributionArray, n);
-  console.log("normalDistributionArray", normalDistributionArray);
+  fillTable(arr1);
+
+  // console.log("normalDistributionArray", normalDistributionArray);
   radio[0].click();
 }
+
+function fillTable(arr, ) {
+  const l = arr.length;
+  const myTable = document.getElementsByTagName("table")[0];
+
+  for (let i = 0; i < l; i++) {
+    const row = myTable.insertRow(i + 1);
+    const x = row.insertCell(0);
+    const y = row.insertCell(1);
+    x.innerHTML = arr[i];
+    y.innerHTML = "0.0";
+  }
+}
+
 function getData() {
-  let data = {
-    fn: `x^2`,
-    color: "#8134f8"
-  };
-  sigm = 1;
-  mu = 0;
+  let data1, data2 = 
+    {
+      points: normalDistributionArray,
+      graphType: 'scatter',
+      fnType: "points",
+      color: "#8134f8"
+    }
+  ;
 
   if (radio[0]["checked"]) {
-    data = {
+    data1 = {
       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
       color: "red"
     };
   } else if (radio[1]["checked"]) {
-    data = {
+    data1 = {
       fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
         mu}) ^ 2) / (2 * 1^ 2))`,
       color: "blue"
     };
   } else if (radio[2]["checked"]) {
-    data = {
+    data1 = {
       fn: `(1 / (${7 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${1 *
         mu}) ^ 2) / (2 * 1^ 2))`,
       color: "green"
     };
   }
 
-  return data;
+  return [data1, data2];
 }
 
 function render(target, val) {
-  console.log(target, val, chart);
+  // console.log(target, val, chart);
   const data = getData();
 
   functionPlot({
     target: "#chart",
+    title: "Calculation",
     grid: true,
     height: 500,
     // disableZoom: true,
@@ -105,7 +126,7 @@ function render(target, val) {
       label: "y",
       domain: [-1, 1.5]
     },
-    data: [data]
+    data: data
   });
 }
 
