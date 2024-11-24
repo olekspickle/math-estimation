@@ -161,7 +161,7 @@
                 <input
                   id="alfa"
                   type="number"
-                  step="0.001"
+                  step="0.01"
                   placeholder="0"
                   name="alfa"
                   maxlength="100"
@@ -249,6 +249,7 @@
         </section>
         <template>
           <div id="table" style="overflow-y:scroll;">
+            <h3 id="caption"></h3>
             <table onscroll="handleTableScroll()">
               <caption></caption>
               <thead>
@@ -260,6 +261,7 @@
             </table>
           </div>
         </template>
+        <div class="loader hidden"></div>
         <!-- <h3><span id="samples">1</span> samples. Last generation <span id="generationTimer">0</span>ms. Last calculation <span id="calculationTimer">0</span>ms.</h3> -->
       </div>
     </main>

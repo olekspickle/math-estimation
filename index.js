@@ -29,7 +29,8 @@ const nav = {
   sample: document.getElementById("sample"),
   back: document.getElementById("previous"),
   forward: document.getElementById("next"),
-  radio: document.getElementsByName("chart")
+  radio: document.getElementsByName("chart"),
+  loader: document.getElementsByClassName("loader")[0]
 };
 let data = {
   screen: {
@@ -42,6 +43,7 @@ let data = {
   quantity: document.getElementById("quantity")["value"],
   n: document.getElementById("n")["value"],
   alfa: document.getElementById("alfa")["value"],
+  caption: document.getElementById('caption'),
   table: document.getElementsByTagName("table")[0],
   tableDiv: document.getElementById("table"),
   samples: document.getElementById("samples")
@@ -142,26 +144,25 @@ function getInterval(arr, i) {
       gamma(nOfN / 2) *
       Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
 
-  let lowPrelim = (avg - (S * t) / Math.sqrt(nOfN)).toFixed(10);
-  let highPrelim = (avg + (S * t) / Math.sqrt(nOfN)).toFixed(10);
-  let low = lowPrelim.substring(0, lowPrelim.length - 5);
-  let high = highPrelim.substring(0, highPrelim.length - 5);
+  //students deviation
+  const SXt = `${(S * t) / Math.sqrt(nOfN)}`;
+  const formattedSXt = normalize(SXt.substring(0, SXt.length - 5));
+  let low = avg - formattedSXt;
+  let high = avg + formattedSXt;
+  // let low = lowPrelim.substring(0, lowPrelim.length - 5);
+  // let high = highPrelim.substring(0, highPrelim.length - 5);
 
-  const numAvg = normalize(`${avg}`)
-  low = `${Number(low) + numAvg}`;
-  high = `${Number(high) + numAvg}`;
+  // const numAvg = Number(avg.toFixed(10).substring(0, 10));
 
   // TEST
-
   // console.log(
   //   i + 1,
   //   "low",
   //   low,
   //   "high",
   //   high,
-  //   "normalized",
-  //   normalize(low, numAvg, true),
-  //   normalize(high, numAvg, true),
+  //   "avg",
+  //   avg,
   //   "delta",
   //   (S * t) / Math.sqrt(nOfN)
   // );
@@ -180,21 +181,18 @@ function getInterval(arr, i) {
   //   `f ${normalize(f)}`
   // );
 
-  return [normalize(low), normalize(high)];
+  return [low, high];
 }
 
-function normalize(el, avg, consoled) {
+function normalize(el) {
   const isNegative = el[0] === "-";
   const index = el.indexOf(".");
-  const isPizdec = index === 2 || index === 3 || index === 4;
+  const isPizdec = index === 2 || index === 3;
   const string = (isNegative && el.slice(1)) || el;
 
   if ((isNegative && index === 2) || index === 1 || isPizdec) {
     return Number(el);
   } else if (index === -1) {
-    if (consoled) {
-      console.log("HERE GOES WRONG", el);
-    }
     const first = string.substring(0, 2);
     const other = string.slice(2);
     return Number(`${(isNegative && "-") || ""}${first}.${other}`);
@@ -208,10 +206,10 @@ function normalize(el, avg, consoled) {
 //===================================CALCULATIONS=============================================<
 
 //=================================DOM_MANIPULATION===========================================>
-
 function handleTableScroll() {
   document.getElementById("tableDiv").scrollLeft = this.scrollLeft;
 }
+
 function handlePreviousSample() {
   if (N === 0) return console.log("enter more numbers");
 
@@ -230,10 +228,7 @@ function handleNextSample() {
   render();
 }
 
-function handleGenerate() {
-  console.time("generate");
-
-  refreshAll();
+function manageGeneration() {
   if (data.sigma === 0) data.sigma = 1;
   if (N === 0) return alert("enter more numbers");
   data.samples.innerHTML = `${N}`;
@@ -245,20 +240,34 @@ function handleGenerate() {
   fillTable(generatedNumbers);
   //adjust table height
   data.tableDiv.style.height = `${nOfN * 26}px`;
+}
 
+function handleGenerate() {
+  console.time("generate");
+  refreshAll();
+
+  manageGeneration();
+
+  if (data.mu - xMax > 8 && !nav.radio[0]["checked"] === true) {
+    refreshCoordinates();
+  }
   console.timeEnd("generate");
 }
 
 function handleCalculate() {
   console.time("calculate");
-
   refreshAll();
+
   pointEstimations = [];
   intervalEstimations = [];
   pointEstimations = getStaticPointEstimates();
   intervalEstimations = getStaticIntervalEstimates();
   // console.log("intervalEstimations", intervalEstimations);
   fillCalculatedTable(pointEstimations);
+  // console.log('data.mu - xMax',data.mu - xMax)
+  if (!nav.radio[0]["checked"] === true) {
+    refreshCoordinates();
+  }
   render();
 
   console.timeEnd("calculate");
@@ -270,7 +279,9 @@ function refreshAll() {
 }
 function refreshCoordinates() {
   const reduceX = (max, el) => (max < el[1] ? el[1] : max);
-  xMax = intervalEstimations.reduce(reduceX, 0);
+  const max = intervalEstimations.reduce(reduceX, 0);
+  xMax = max > data.mu ? max : data.mu;
+  // console.log("mu", data.mu, "max", max);
   yMax = data.quantity * 0.1 + 1;
 }
 
@@ -370,8 +381,17 @@ function fillCalculatedTable(arr) {
 }
 
 function getIntervalVectors(i, isOne) {
+  if (!intervalEstimations.length) {
+    nav.radio[0]["checked"] = true;
+    return alert("You need to calculate intervals first");
+  }
   //TEST
-  // console.log('pointEstimations', pointEstimations, 'intervalEstimations', intervalEstimations)
+  // console.log(
+  //   "pointEstimations",
+  //   pointEstimations,
+  //   "intervalEstimations",
+  //   intervalEstimations
+  // );
   let x = pointEstimations[i],
     range = intervalEstimations[i],
     y;
