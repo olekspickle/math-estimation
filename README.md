@@ -1,6 +1,6 @@
 # math-estimation
 
-Simple place where you can play with math estimation with nice visualization.
+Simple sample where you can play with math estimation with nice visualization.
 
 simply copy this into your terminal to get the demo locally
 ```bash
