@@ -1,5 +1,6 @@
 # math-estimation
 ## Normal Puasson distribution playground 
+![Screenshot_20230226_200623](https://user-images.githubusercontent.com/22867443/221428240-f08d70eb-09fd-4f8f-9006-d62115148a76.png)
 
 Simple sample where you can play with math estimation with nice visualization.
 
