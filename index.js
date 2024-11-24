@@ -477,7 +477,7 @@ function render() {
 
   data.graphInstance = functionPlot({
     target: "#chart",
-    title: "Calculation",
+    title: "",
     grid: true,
     height: height,
     width: (!isMobile && height * 1.45) || 350,
