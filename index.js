@@ -161,6 +161,7 @@ function handleNextSample() {
 
 function handleGenerate() {
   refreshAll();
+  if (data.sigma === 0) data.sigma = 0.001;
   if (N === 0) return console.log("enter more numbers");
   data.samples.innerHTML = `${N}`;
 
@@ -234,6 +235,7 @@ function fillTable(arr) {
   if (!arr.length || !arr[0].length) return;
   const outerLength = arr.length;
   const innerLength = arr[0].length;
+  const caption = data.table.caption;
 
   for (let i = 0; i < outerLength; i++) {
     const tr = data.table.tHead.children[0],
@@ -249,11 +251,14 @@ function fillTable(arr) {
       cell.innerHTML = arr[i][j][0];
     }
   }
+
+  caption.innerHTML = "Generated numbers";
 }
 
 function fillCalculatedTable(arr) {
   if (!arr.length) return;
   const length = arr.length;
+  const caption = data.table.caption;
 
   for (let i = 0; i < length; i++) {
     const tr = data.table.tHead.children[0],
@@ -266,6 +271,8 @@ function fillCalculatedTable(arr) {
     const cell = row.insertCell(i);
     cell.innerHTML = arr[i].toFixed(8);
   }
+
+  caption.innerHTML = "Average estimation for each sample";
 }
 
 function getIntervalVectors(i, isOne) {
@@ -326,17 +333,21 @@ function getData() {
 function handleRadio(target) {
   switch (target.value) {
     case "second":
+      refreshCoordinates();
+      break;
     case "first":
+      handleCalculate();
       refreshCoordinates();
       break;
     default:
-      yMax = 0.6;
+      yMax = 0.5;
       xMax = 8;
   }
 }
 
 function render(target, val) {
   if (target) handleRadio(target);
+
   const makeWider = xMax + 0.2;
   renderData = getData();
   // console.log("data", renderData);
