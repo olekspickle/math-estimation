@@ -50,7 +50,6 @@ let data = {
 const chart = document.getElementById("chart");
 //==============================CANVAS===============================================>
 
-
 //==============================CANVAS===============================================>
 //==============================CALCULATIONS===============================================>
 
@@ -130,9 +129,8 @@ function getStaticIntervalEstimates() {
 function getInterval(arr, i) {
   //Xavg -static point estimate
   const avg = +pointEstimations[i];
-  const reducer = (sum, curr) => {
-    return sum + Math.pow(+curr[0] - avg, 2);
-  };
+  const reducer = (sum, curr) => sum + Math.pow(+curr[0] - avg, 2);
+
   //Xi - Xavg
   const sqSum = arr.reduce(reducer, 0);
   //S(x) - unshifted variance estimate
@@ -148,10 +146,13 @@ function getInterval(arr, i) {
   let highPrelim = avg + (S * t) / Math.sqrt(nOfN);
 
   //parse to float that javascript can handle
-  const low = `${lowPrelim}`.substring(0, 10);
-  const high = `${highPrelim}`.substring(0, 10);
+  let low = `${lowPrelim}`.substring(0, 10);
+  let high = `${highPrelim}`.substring(0, 10);
 
-  // console.log("avg, sqSum, S, t", avg, sqSum, S, t);
+  low = `${+low + avg}`
+  high = `${+high + avg}`
+  // console.log("avg, sqSum, S, t", avg, sqSum, S, t, 'nothing', (S * t) / Math.sqrt(nOfN));
+  console.log("low, high",low, high, 'nothing', (S * t) / Math.sqrt(nOfN));
   // console.log("low", low, "high", high);
 
   return [+low, +high];
@@ -171,7 +172,6 @@ function handlePreviousSample() {
   currentN--;
   nav.sample.innerHTML = `${currentN + 1}`;
   render();
-  
 }
 
 function handleNextSample() {
@@ -181,7 +181,6 @@ function handleNextSample() {
   currentN++;
   nav.sample.innerHTML = `${currentN + 1}`;
   render();
-  
 }
 
 function handleGenerate() {
@@ -207,7 +206,6 @@ function handleCalculate() {
   intervalEstimations = getStaticIntervalEstimates();
   fillCalculatedTable(pointEstimations);
   render();
-  
 }
 
 function refreshAll() {
@@ -268,7 +266,6 @@ function refreshChart() {
     data.graphInstance.root[0][0].innerHTML = "";
   }
   render();
-  
 }
 
 function fillTable(arr) {
@@ -418,7 +415,7 @@ function render() {
 
 function init() {
   nav.radio[0]["checked"] = true;
-  render()
+  render();
 }
 
 function radioListener({ target }) {
