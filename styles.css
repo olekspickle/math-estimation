@@ -10,10 +10,9 @@
   --main-color: #0fb3ff;
 
   /* table vars */
-
   --table-header-font-weight: 600;
   --table-border: #646363d3;
-  --table-cell-padding: 1.2rem;
+  --table-cell-padding: 1.3rem;
   --table-bg: #e0e0e0;
   --table-bg-hover: rgba(20, 159, 240, 0.555);
   --table-border-color: #e0e0e0;
@@ -173,54 +172,10 @@ main h2 {
 #forms form button:focus,
 #forms button:hover,
 #forms button:focus {
-  background-color: var(--main-color) 88;
+  background-color: var(--main-color);
+  transform: scale(1.1);
   transition: 0.5s;
 }
-
-/**************************MATERIAL SELECT**********************************/
-select {
-  font-family: inherit;
-  background-color: transparent;
-  width: 100%;
-  padding: var(--select-padding) 0;
-  font-size: var(--form-font-size);
-  color: var(--black);
-  border: none;
-  border-bottom: 1px solid var(--select-border-color);
-}
-
-/* Remove focus */
-select:focus {
-  box-shadow: 1px 1px 2px #00f;
-}
-
-/* Hide label */
-.alfa-select label {
-  display: none;
-}
-/* Use custom arrow */
-.alfa-select select {
-  appearance: none;
-}
-.alfa-select {
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  position: relative;
-}
-.alfa-select:after {
-  position: absolute;
-  top: 0.75em;
-  right: 0.5em;
-  /* Styling the down arrow */
-  width: 0;
-  height: 0;
-  padding: 0;
-  content: "";
-  border-left: 0.25em solid transparent;
-  border-right: 0.25em solid transparent;
-  border-top: 0.375em solid var(--select-border-color);
-  pointer-events: none;
-}
-/**************************MATERIAL SELECT**********************************/
 
 canvas {
   margin: 10px auto;
@@ -420,8 +375,57 @@ input[type="number"]::-webkit-outer-spin-button {
 .bar:after {
   right: 50%;
 }
+/**************************MATERIAL SELECT**********************************/
+select {
+  font-family: inherit;
+  background-color: transparent;
+  width: 5em;
+  padding: var(--select-padding);
+  font-size: var(--form-font-size);
+  color: var(--black);
+  border: none;
+  border-bottom: 1px solid var(--select-border-color);
+}
 
-/* HIGHLIGHTER ================================== */
+select option{
+  text-align: center;
+}
+select:focus {
+  outline-color: var(--bars-color);
+  border-bottom: 2px 1px 2px var(--bars-color);
+}
+
+select:focus ~ label {
+  display: none;
+}
+
+.alfa-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.alfa-select {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  position: relative;
+}
+.alfa-select:after {
+  position: absolute;
+  top: 0.75em;
+  right: 0.5em;
+  /* Styling the down arrow */
+  width: 0;
+  height: 0;
+  padding: 0;
+  content: "";
+  border-left: 0.25em solid transparent;
+  border-right: 0.25em solid transparent;
+  border-top: 0.375em solid var(--select-border-color);
+  pointer-events: none;
+}
+/**************************MATERIAL SELECT**********************************/
+
+/***************************HIGHLIGHTER ************************************/
 .highlight {
   position: absolute;
   height: 60%;
@@ -432,7 +436,7 @@ input[type="number"]::-webkit-outer-spin-button {
   opacity: 0.5;
 }
 
-/* ANIMATIONS ================ */
+/**************************ANIMATIONS ****************************************/
 @-webkit-keyframes inputHighlighter {
   from {
     background: var(--bars-color);
@@ -461,7 +465,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-/**********LOADER********************/
+/************************************LOADER*********************************/
 .loader {
   position: absolute;
   top: 18%;
@@ -474,7 +478,6 @@ input[type="number"]::-webkit-outer-spin-button {
   animation: spin 2s linear infinite;
 }
 
-/* Safari */
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
