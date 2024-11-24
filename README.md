@@ -1,4 +1,5 @@
 # math-estimation
+## Normal Puasson distribution playground 
 
 Simple sample where you can play with math estimation with nice visualization.
 
