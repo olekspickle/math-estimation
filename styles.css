@@ -316,6 +316,12 @@ a:hover{
 .row {
   flex-direction: row;
 }
+
+@media (min-width: 1500px) {
+  a {
+    right: -10em;
+  }
+}
 @media (max-width: 1330px) {
   a {
     top: 50px;
