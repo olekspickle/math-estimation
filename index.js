@@ -147,31 +147,47 @@ function getInterval(arr, i) {
   let low = lowPrelim.substring(0, lowPrelim.length - 5);
   let high = highPrelim.substring(0, highPrelim.length - 5);
 
-  // console.log("low", low, "high", high);
-  const numAvg = Number(`${avg}`.substring(0, 10));
+  const numAvg = normalize(`${avg}`)
   low = `${Number(low) + numAvg}`;
   high = `${Number(high) + numAvg}`;
-  console.log("low", low, "high", high, "numAvg", numAvg);
 
-  // console.log("avg, sqSum, S, t", avg, sqSum, S, t, 'nothing', (S * t) / Math.sqrt(nOfN));
-  console.log(
-    i,
-    "low, high",
-    normalize(low, numAvg, true),
-    normalize(high, numAvg, true),
-    "nothing",
-    (S * t) / Math.sqrt(nOfN)
-  );
-  // console.log("low", low, "high", high);
+  // TEST
+
+  // console.log(
+  //   i + 1,
+  //   "low",
+  //   low,
+  //   "high",
+  //   high,
+  //   "normalized",
+  //   normalize(low, numAvg, true),
+  //   normalize(high, numAvg, true),
+  //   "delta",
+  //   (S * t) / Math.sqrt(nOfN)
+  // );
+  // const a = "9872687676423";
+  // const b = "9.872687676423";
+  // const c = "98.72687676423";
+  // const e = "-9872687676423";
+  // const d = "-9.872687676423";
+  // const f = "-98.72687676423";
+  // console.log(
+  //   `a ${normalize(a)}`,
+  //   `b ${normalize(b)}`,
+  //   `c ${normalize(c)}`,
+  //   `\nd ${normalize(d)}`,
+  //   `e ${normalize(e)}`,
+  //   `f ${normalize(f)}`
+  // );
 
   return [normalize(low), normalize(high)];
 }
 
 function normalize(el, avg, consoled) {
   const isNegative = el[0] === "-";
-  // const isNegative = ;
   const index = el.indexOf(".");
-  const isPizdec = !isNegative && (index === 2 || index === 3);
+  const isPizdec = index === 2 || index === 3 || index === 4;
+  const string = (isNegative && el.slice(1)) || el;
 
   if ((isNegative && index === 2) || index === 1 || isPizdec) {
     return Number(el);
@@ -179,19 +195,16 @@ function normalize(el, avg, consoled) {
     if (consoled) {
       console.log("HERE GOES WRONG", el);
     }
-    const string = (isNegative && el.slice(1)) || el;
-    const first = string.substring(0, 1);
-    const other = string.slice(1);
+    const first = string.substring(0, 2);
+    const other = string.slice(2);
     return Number(`${(isNegative && "-") || ""}${first}.${other}`);
   } else {
-    const string = (isNegative && el.slice(1)) || el;
     const arr = string.split(".").join("");
     const first = arr.substring(0, 1);
     const other = arr.slice(1);
     return Number(`${(isNegative && "-") || ""}${first}.${other}`);
   }
 }
-
 //===================================CALCULATIONS=============================================<
 
 //=================================DOM_MANIPULATION===========================================>
@@ -218,6 +231,8 @@ function handleNextSample() {
 }
 
 function handleGenerate() {
+  console.time("generate");
+
   refreshAll();
   if (data.sigma === 0) data.sigma = 1;
   if (N === 0) return alert("enter more numbers");
@@ -230,18 +245,23 @@ function handleGenerate() {
   fillTable(generatedNumbers);
   //adjust table height
   data.tableDiv.style.height = `${nOfN * 26}px`;
+
+  console.timeEnd("generate");
 }
 
 function handleCalculate() {
+  console.time("calculate");
+
   refreshAll();
   pointEstimations = [];
   intervalEstimations = [];
   pointEstimations = getStaticPointEstimates();
-  console.log("intervalEstimations", intervalEstimations);
   intervalEstimations = getStaticIntervalEstimates();
-  console.log("intervalEstimations", intervalEstimations);
+  // console.log("intervalEstimations", intervalEstimations);
   fillCalculatedTable(pointEstimations);
   render();
+
+  console.timeEnd("calculate");
 }
 
 function refreshAll() {
@@ -350,11 +370,12 @@ function fillCalculatedTable(arr) {
 }
 
 function getIntervalVectors(i, isOne) {
+  //TEST
   // console.log('pointEstimations', pointEstimations, 'intervalEstimations', intervalEstimations)
   let x = pointEstimations[i],
     range = intervalEstimations[i],
     y;
-  if (isOne) y = 1.01 * (1 / (data.sigma * Math.sqrt(2 * Math.PI)));
+  if (isOne) y = yMax / 2;
   else y = ((yMax - 0.1) / data.quantity) * i;
 
   const vertical = {
@@ -428,6 +449,8 @@ function render() {
     height = isMobile ? 300 : 450;
 
   renderData = getData();
+
+  //TEST
   // console.log("renderData", renderData);
 
   data.graphInstance = functionPlot({
