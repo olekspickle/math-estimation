@@ -1,3 +1,8 @@
+/*
+    1. Change accuracy if needed:
+    toFixed(4) -> toFixed(needed_decimal_points)
+*/
+
 let sigm = 1,
   mu = 0,
   N = 0,
@@ -21,6 +26,7 @@ let data = {
   n: document.getElementById("n")["value"],
   alfa: document.getElementById("alfa")["value"],
   table: document.getElementsByTagName("table")[0],
+  tableDiv: document.getElementById("table"),
   samples: document.getElementById("samples")
 };
 
@@ -51,7 +57,8 @@ function gamma(op) {
   for (let i = 1; i <= 6; ++i) d2 += p[i] / (z + i);
 
   let d3d4 = Math.exp((z + 0.5) * Math.log(z + 5.5) - z - 5.5);
-  console.log("d1 * d2 * d3d4", d1 * d2 * d3d4);
+
+  // console.log("d1 * d2 * d3d4", d1 * d2 * d3d4);
 
   return d1 * d2 * d3d4;
 }
@@ -72,7 +79,7 @@ function getStaticPointEstimates() {
   return generatedNumbers.map(el => {
     const reducer = (sum, current) => sum + parseFloat(current[0]);
     const s = el.reduce(reducer, 0);
-    return s / el.length;
+    return (s / el.length).toFixed(8);
   });
 }
 
@@ -86,7 +93,6 @@ function getInterval(arr, i) {
   const reducer = (sum, curr) => {
     return sum + Math.pow(parseFloat(curr[0]) - avg, 2);
   };
-
   //Xi - Xavg
   const sqSum = arr.reduce(reducer, 0);
   //S(x) - unshifted variance estimate
@@ -97,7 +103,8 @@ function getInterval(arr, i) {
     (Math.sqrt(nOfN * Math.PI) *
       gamma(nOfN / 2) *
       Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
-  console.log("avg, sqSum, S, t", avg, sqSum, S, t);
+
+  // console.log("avg, sqSum, S, t", avg, sqSum, S, t);
 
   const low = avg - (S * t) / Math.sqrt(nOfN);
   const high = avg + (S * t) / Math.sqrt(nOfN);
@@ -107,7 +114,9 @@ function getInterval(arr, i) {
 //===================================CALCULATIONS=============================================<
 
 //=================================DOM_MANIPULATION===========================================>
-
+function handleTableScroll() {
+  document.getElementById("tableDiv").scrollLeft = this.scrollLeft;
+}
 function handlePreviousSample() {
   if (N === 0) return console.log("enter more numbers");
 
@@ -128,20 +137,7 @@ function handleNextSample() {
 
 function handleGenerate() {
   refreshTable();
-  data = {
-    sigma: document.getElementById("sigma")["value"],
-    mu: document.getElementById("mu")["value"],
-    quantity: document.getElementById("quantity")["value"],
-    n: document.getElementById("n")["value"],
-    alfa: document.getElementById("alfa")["value"],
-    table: document.getElementsByTagName("table")[0],
-    samples: document.getElementById("samples")
-  };
-  N = data.quantity;
-  nOfN = data.n;
-  sigm = data.sigma;
-  mu = data.mu;
-  alfa = data.alfa;
+  refreshData();
 
   if (N === 0) return console.log("enter more numbers");
   data.samples.innerHTML = `${N}`;
@@ -152,26 +148,49 @@ function handleGenerate() {
   }
 
   fillTable(generatedNumbers);
+  data.tableDiv.style.height = `${nOfN * 26}px`;
   nav.radio[0].click();
 }
 
 function handleCalculate() {
   refreshTable();
+  refreshData();
 
   pointEstimations = getStaticPointEstimates();
   intervalEstimations = getStaticIntervalEstimates();
+
   fillCalculatedTable(pointEstimations);
-  render()
-  console.log(
-    "point estimations",
-    pointEstimations,
-    "interval estimations",
-    intervalEstimations
-  );
+  render();
+
+  // console.log(
+  //   "point estimations",
+  //   pointEstimations,
+  //   "interval estimations",
+  //   intervalEstimations
+  // );
+}
+
+function refreshData() {
+  data = {
+    sigma: document.getElementById("sigma")["value"],
+    mu: document.getElementById("mu")["value"],
+    quantity: document.getElementById("quantity")["value"],
+    n: document.getElementById("n")["value"],
+    alfa: document.getElementById("alfa")["value"],
+    table: document.getElementsByTagName("table")[0],
+    tableDiv: document.getElementById("table"),
+    samples: document.getElementById("samples")
+  };
+  N = data.quantity;
+  nOfN = data.n;
+  sigm = data.sigma;
+  mu = data.mu;
+  alfa = data.alfa;
 }
 
 function refreshTable() {
   if (data.table) data.table.parentNode.removeChild(data.table);
+  if (data.tableDiv) data.tableDiv.parentNode.removeChild(data.tableDiv);
   const temp = document.getElementsByTagName("template")[0],
     main = document.getElementsByClassName("main")[0],
     clon = temp.content.cloneNode(true);
@@ -193,7 +212,8 @@ function fillTable(arr) {
     const row = data.table.insertRow(j + 1);
     for (let i = 0; i < outerLength; i++) {
       const cell = row.insertCell(i);
-      cell.innerHTML = arr[i][j];
+      //array of arrays of arrays of type [x, y = 0]
+      cell.innerHTML = arr[i][j][0];
     }
   }
 }
@@ -207,7 +227,7 @@ function fillCalculatedTable(arr) {
     th.innerHTML = `X${i + 1}`;
     tr.appendChild(th);
   }
-  const row = data.table.insertRow(0);
+  const row = data.table.insertRow(1);
   for (let i = 0; i < length; i++) {
     const cell = row.insertCell(i);
     cell.innerHTML = arr[i];
@@ -215,14 +235,12 @@ function fillCalculatedTable(arr) {
 }
 
 function getData() {
-  let data1, data2;
-
   if (nav.radio[0]["checked"]) {
-    data1 = {
+    const data1 = {
       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
       color: "red"
     };
-    data2 = {
+    const data2 = {
       points: generatedNumbers[currentN],
       graphType: "scatter",
       fnType: "points",
@@ -230,18 +248,25 @@ function getData() {
     };
     if (N === 0 || !generatedNumbers.length) return [data1];
     return [data1, data2];
+
   } else if (nav.radio[1]["checked"]) {
     const x = probabilityDensity(pointEstimations[currentN]);
     const range = intervalEstimations[currentN];
-    data1 = {
+    const y = Math.random() * 2;
+    const data1 = {
       fn: `${x}`,
+      color: "red",
+      range: range
+    };
+    const data2 = {
+      points: [[x, y], [range[0], y], [range[1], y]],
       graphType: "scatter",
       fnType: "points",
       color: "blue",
-      range: range
     };
+    return [data1,data2];
   } else if (nav.radio[2]["checked"]) {
-    data1 = {
+    const data1 = {
       fn: `(1 / (${7 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${1 *
         mu}) ^ 2) / (2 * 1^ 2))`,
       color: "green"
@@ -251,6 +276,7 @@ function getData() {
 
 function render(target, val) {
   const data = getData();
+  console.log("data", data);
 
   functionPlot({
     target: "#chart",
