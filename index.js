@@ -48,11 +48,8 @@ let data = {
   tableDiv: document.getElementById("table"),
   samples: document.getElementById("samples")
 };
-console.log(data.caption);
-const chart = document.getElementById("chart");
-//==============================CANVAS===============================================>
 
-//==============================CANVAS===============================================>
+const chart = document.getElementById("chart");
 //==============================CALCULATIONS===============================================>
 
 const probabilityDensity = function(x) {
@@ -264,8 +261,9 @@ function handleCalculate() {
   intervalEstimations = [];
   pointEstimations = getStaticPointEstimates();
   intervalEstimations = getStaticIntervalEstimates();
-  // console.log("intervalEstimations", intervalEstimations);
   fillCalculatedTable(pointEstimations);
+  //TEST
+  // console.log("intervalEstimations", intervalEstimations);
   // console.log('data.mu - xMax',data.mu - xMax)
   if (!nav.radio[0]["checked"] === true) {
     refreshCoordinates();
