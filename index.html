@@ -103,70 +103,31 @@
     <nav>
       <ul>
         <li>
-          <label class="label"
-            >Show chart <input name="chart" type="radio" value="standart" />
+          <label class="label">Show chart <input name="chart" type="radio" value="standart" />
+            <span class="check"></span>
+          
+        </li>
+        <li>
+          <label class="label">Show evaluation estimation<input name="chart" type="radio" value="first" />
             <span class="check"></span>
           </label>
         </li>
         <li>
-          <label class="label"
-            >Show evaluation estimation
-            <input name="chart" type="radio" value="first" />
+          <label class="label">Show all evaluations<input name="chart" type="radio" value="second" />
             <span class="check"></span>
           </label>
-        </li>
-        <li>
-          <label class="label"
-            >Show all evaluations
-            <input name="chart" type="radio" value="second" />
-            <span class="check"></span>
-          </label>
-        </li>
-      </ul>
-      <h4>
-        Sample <span id="sample">1</span> from <span id="samples">1</span>
-      </h4>
-      <ul class="row">
-        <li>
-          <button
-            id="previous"
-            onclick="handlePreviousSample()"
-            type="button"
-            name="previus"
-          >
-            <
-          </button>
-        </li>
-        <li>
-          <button
-            id="next"
-            onclick="handleNextSample()"
-            type="button"
-            name="next"
-          >
-            >
-          </button>
-        </li>
-        <li>
-          <button
-            id="refresh"
-            onclick="refreshChart()"
-            type="button"
-            name="refresh"
-          >
-            &#x21bb;
-          </button>
         </li>
       </ul>
     </nav>
-    <section>
+    <main>
       <div class="main">
+          <section>
         <div id="forms">
           <form onsubmit="handleGenerate()" target="votar">
-            <h4>N</h4>
-            <div>
+            <div class="field">
               <label>
                 &sigma;
+              </label>
                 <input
                   id="sigma"
                   type="number"
@@ -175,9 +136,13 @@
                   name="sigma"
                   maxlength="100"
                 />
-              </label>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+            </div>
+            <div class="field">
               <label>
                 &#956;
+              </label>
                 <input
                   id="mu"
                   type="number"
@@ -186,9 +151,13 @@
                   name="mu"
                   maxlength="100"
                 />
-              </label>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+            </div>
+            <div class="field">
               <label>
                 &#945; (alfa)
+              </label>
                 <input
                   id="alfa"
                   type="number"
@@ -197,11 +166,13 @@
                   name="alfa"
                   maxlength="100"
                 />
-              </label>
+                <span class="highlight"></span>
+                <span class="bar"></span>
             </div>
-            <div>
+            <div class="field">
               <label>
-                sample number(N)
+                N
+              </label>
                 <input
                   id="quantity"
                   type="number"
@@ -209,25 +180,72 @@
                   name="quantity"
                   maxlength="100"
                 />
-              </label>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+            </div>
+            <div class="field">
               <label>
                 q-ty(n)
+              </label>
                 <input
                   id="n"
                   type="number"
                   placeholder="0"
                   name="n"
                   maxlength="100"
+                  sumbit="handleGenerate()"
                 />
-              </label>
+                <span class="highlight"></span>
+                <span class="bar"></span>
             </div>
-            <button name="generate" type="sumbit">generate</button>
+            <input style="display: none;" type="submit" value="Submit" />
           </form>
+          <div class="buttons">
+          <button name="generate" type="sumbit">generate</button>
           <button name="calculate" onclick="handleCalculate()" type="button">
             calculate
           </button>
         </div>
+        </div>
+        <div class="controls">
+        <h4>
+            Sample <span id="sample">1</span> from <span id="samples">1</span>
+          </h4>
+          <ul class="row">
+            <li>
+              <button
+                id="previous"
+                onclick="handlePreviousSample()"
+                type="button"
+                name="previus"
+              >
+                <
+              </button>
+            </li>
+            <li>
+              <button
+                id="next"
+                onclick="handleNextSample()"
+                type="button"
+                name="next"
+              >
+                >
+              </button>
+            </li>
+            <li>
+              <button
+                id="refresh"
+                onclick="refreshChart()"
+                type="button"
+                name="refresh"
+              >
+                &#x21bb;
+              </button>
+            </li>
+          </ul>
+        </div>
         <div id="chart"></div>
+        </section>
         <template>
           <div id="table" style="overflow-y:scroll;">
             <table onscroll="handleTableScroll()">
@@ -242,7 +260,7 @@
           </div>
         </template>
       </div>
-    </section>
+    </main>
 
     <script src="./index.js"></script>
     <iframe name="votar"></iframe>
