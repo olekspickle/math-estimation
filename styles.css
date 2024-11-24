@@ -222,6 +222,7 @@ main td {
   width: 70px;
   background: var(--white);
   padding: var(--table-cell-padding);
+  background: linear-gradient(100deg, #7E6CFF 0%, #483AFF 100%);
 }
 iframe {
   display: none;
