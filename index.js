@@ -9,6 +9,7 @@ let sigm = 1,
   nOfN = 0,
   alfa = 0.2,
   currentN = 0,
+  renderData = [],
   generatedNumbers = [], // [[x1:string,y1:number],[x2:string,y2:number]...[xn:string,yn:number]]
   pointEstimations = [], // [[x1:number],[x2:number]...[xn:number]]
   intervalEstimations = []; // [[x1:number,x2:number],[x1:number,x2:number]...[x1:number,x2:number]]
@@ -30,7 +31,7 @@ let data = {
   samples: document.getElementById("samples")
 };
 
-const chart = document.querySelector("#chart");
+const chart = document.getElementById("chart");
 //==============================CALCULATIONS===============================================>
 
 const probabilityDensity = function(x) {
@@ -77,9 +78,11 @@ function generate(arr, n) {
 
 function getStaticPointEstimates() {
   return generatedNumbers.map(el => {
-    const reducer = (sum, current) => sum + parseFloat(current[0]);
+    const reducer = (sum, current) => sum + +current[0];
     const s = el.reduce(reducer, 0);
-    return (s / el.length).toFixed(8);
+    const X = s / el.length;
+
+    return X;
   });
 }
 
@@ -89,9 +92,9 @@ function getStaticIntervalEstimates() {
 
 function getInterval(arr, i) {
   //Xavg -static point estimate
-  const avg = pointEstimations[i];
+  const avg = +pointEstimations[i];
   const reducer = (sum, curr) => {
-    return sum + Math.pow(parseFloat(curr[0]) - avg, 2);
+    return sum + Math.pow(+curr[0] - avg, 2);
   };
   //Xi - Xavg
   const sqSum = arr.reduce(reducer, 0);
@@ -104,11 +107,17 @@ function getInterval(arr, i) {
       gamma(nOfN / 2) *
       Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
 
-  // console.log("avg, sqSum, S, t", avg, sqSum, S, t);
+  let lowPrelim = avg - (S * t) / Math.sqrt(nOfN);
+  let highPrelim = avg + (S * t) / Math.sqrt(nOfN);
 
-  const low = avg - (S * t) / Math.sqrt(nOfN);
-  const high = avg + (S * t) / Math.sqrt(nOfN);
-  return [low, high];
+  //parse to float that javascript can handle
+  const low = `${lowPrelim}`.substring(0, 10);
+  const high = `${highPrelim}`.substring(0, 10);
+
+  // console.log("avg, sqSum, S, t", avg, sqSum, S, t);
+  // console.log("low", low, "high", high);
+
+  return [+low, +high];
 }
 
 //===================================CALCULATIONS=============================================<
@@ -196,6 +205,12 @@ function refreshTable() {
     clon = temp.content.cloneNode(true);
   main.appendChild(clon);
 }
+function refreshChart() {
+  const chart = document.getElementById("chart");
+  if (chart) chart.parentNode.removeChild(chart);
+  const main = document.getElementsByClassName("main")[0];
+  main.appendChild(chart);
+}
 
 function fillTable(arr) {
   if (!arr.length || !arr[0].length) return;
@@ -230,8 +245,39 @@ function fillCalculatedTable(arr) {
   const row = data.table.insertRow(1);
   for (let i = 0; i < length; i++) {
     const cell = row.insertCell(i);
-    cell.innerHTML = arr[i];
+    cell.innerHTML = arr[i].toFixed(8);
   }
+}
+
+function getIntervalVectors(i) {
+  let x = pointEstimations[i];
+  let range = intervalEstimations[i];
+  const y = Math.random() * 1;
+
+  console.log("range", range, "x", x);
+
+  const data1 = {
+    vector: [[x, 0], [x, 1]],
+    fnType: "vector",
+    color: "black",
+    graphType: "polyline",
+    sampler: "builtIn"
+  };
+  const data2 = {
+    points: [[x, y], [range[0], y], [range[1], y]],
+    graphType: "scatter",
+    fnType: "points",
+    color: "blue",
+    sampler: "builtIn"
+  };
+  const data3 = {
+    vector: [[range[0], y], [range[1], y]],
+    fnType: "vector",
+    color: "red",
+    sampler: "builtIn",
+    graphType: "polyline"
+  };
+  return [data1, data2, data3];
 }
 
 function getData() {
@@ -248,36 +294,23 @@ function getData() {
     };
     if (N === 0 || !generatedNumbers.length) return [data1];
     return [data1, data2];
-
   } else if (nav.radio[1]["checked"]) {
-    const x = probabilityDensity(pointEstimations[currentN]);
-    const range = intervalEstimations[currentN];
-    const y = Math.random() * 2;
-    const data1 = {
-      fn: `${x}`,
-      color: "red",
-      range: range
-    };
-    const data2 = {
-      points: [[x, y], [range[0], y], [range[1], y]],
-      graphType: "scatter",
-      fnType: "points",
-      color: "blue",
-    };
-    return [data1,data2];
+    return getIntervalVectors(currentN);
   } else if (nav.radio[2]["checked"]) {
-    const data1 = {
-      fn: `(1 / (${7 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${1 *
-        mu}) ^ 2) / (2 * 1^ 2))`,
-      color: "green"
+    const reducer = (sum, current, i) => {
+      const el = getIntervalVectors(i);
+      el.forEach(item => sum.push(item));
+
+      return sum;
     };
+    return pointEstimations.reduce(reducer, []);
   }
 }
 
 function render(target, val) {
-  const data = getData();
-  console.log("data", data);
-
+  renderData = getData();
+  
+  console.log("data", renderData);
   functionPlot({
     target: "#chart",
     title: "Calculation",
@@ -292,7 +325,7 @@ function render(target, val) {
       label: "y",
       domain: [-1, 1]
     },
-    data: data
+    data: renderData
   });
 }
 
@@ -306,9 +339,10 @@ function radioListener({ target }) {
 }
 
 nav.radio.forEach(function(el) {
-  chart["style"].display = "none";
+  // chart.style.display = "none";
   el.addEventListener("click", radioListener);
-  chart["style"].display = "inline";
+  refreshChart();
+  // chart.style.display = "inline";
 });
 
 init();
