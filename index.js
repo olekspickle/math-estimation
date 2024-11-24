@@ -151,30 +151,29 @@ function getInterval(arr, i) {
   const numAvg = Number(`${avg}`.substring(0, 10));
   low = `${Number(low) + numAvg}`;
   high = `${Number(high) + numAvg}`;
-  // console.log("low", low, "high", high, "numAvg", numAvg);
+  console.log("low", low, "high", high, "numAvg", numAvg);
 
   // console.log("avg, sqSum, S, t", avg, sqSum, S, t, 'nothing', (S * t) / Math.sqrt(nOfN));
-  // console.log(
-  //   i,
-  //   "low, high",
-  //   numberify(low, true),
-  //   numberify(high, true),
-  //   "nothing",
-  //   (S * t) / Math.sqrt(nOfN)
-  // );
+  console.log(
+    i,
+    "low, high",
+    normalize(low, numAvg, true),
+    normalize(high, numAvg, true),
+    "nothing",
+    (S * t) / Math.sqrt(nOfN)
+  );
   // console.log("low", low, "high", high);
 
-  return [numberify(low), numberify(high)];
+  return [normalize(low), normalize(high)];
 }
 
-function numberify(el, consoled) {
-  let isNegative = el[0] === "-";
+function normalize(el, avg, consoled) {
+  const isNegative = el[0] === "-";
+  // const isNegative = ;
   const index = el.indexOf(".");
-  if (
-    (isNegative && (index === 2 || index === 3)) ||
-    index === 1 ||
-    index === 2
-  ) {
+  const isPizdec = !isNegative && (index === 2 || index === 3);
+
+  if ((isNegative && index === 2) || index === 1 || isPizdec) {
     return Number(el);
   } else if (index === -1) {
     if (consoled) {
