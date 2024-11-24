@@ -34,6 +34,7 @@ let data = {
     width: window.innerWidth,
     height: window.innerHeight
   },
+  graphInstance: {},
   sigma: document.getElementById("sigma")["value"],
   mu: document.getElementById("mu")["value"],
   quantity: document.getElementById("quantity")["value"],
@@ -137,11 +138,6 @@ function getInterval(arr, i) {
 
 //=================================DOM_MANIPULATION===========================================>
 
-function handleRefresh() {
-  refreshChart(true);
-  console.log();
-}
-
 function handleTableScroll() {
   document.getElementById("tableDiv").scrollLeft = this.scrollLeft;
 }
@@ -229,13 +225,21 @@ function refreshTable() {
     clon = temp.content.cloneNode(true);
   main.appendChild(clon);
 }
-function refreshChart(isItRefresh) {
-  const chart = document.getElementById("chart"),
+
+function refreshChart() {
+    div = document.createElement("div"),
     temp = document.getElementsByTagName("template")[0];
-  if (chart) chart.parentNode.removeChild(chart);
-  if (isItRefresh) return;
-  const main = document.getElementsByClassName("main")[0];
-  main.insertBefore(chart, temp);
+
+  div.id = "chart";
+  if (
+    data.graphInstance.root &&
+    data.graphInstance.root[0] &&
+    data.graphInstance.root[0][0]
+  ) {
+    data.graphInstance.canvas[0][0].innerHTML = "";
+    data.graphInstance.root[0][0].innerHTML = "";
+    
+  }
   render();
 }
 
@@ -274,6 +278,7 @@ function fillCalculatedTable(arr) {
     th.innerHTML = `X${i + 1}`;
     tr.appendChild(th);
   }
+
   const row = data.table.insertRow(1);
   for (let i = 0; i < length; i++) {
     const cell = row.insertCell(i);
@@ -338,14 +343,17 @@ function getData() {
     return pointEstimations.reduce(reducer, []);
   }
 }
+
 function handleRadio(target) {
   switch (target.value) {
     case "second":
       refreshCoordinates();
+      refreshChart()
       break;
     case "first":
-      handleCalculate();
+      // handleCalculate();
       refreshCoordinates();
+      refreshChart()
       break;
     default:
       yMax = 0.45;
@@ -355,15 +363,17 @@ function handleRadio(target) {
 
 function render(target, val) {
   if (target) handleRadio(target);
-  
+
   //chart width
   const isMobile = data.screen.width < 600;
   const makeWider = xMax + 0.2,
     height = isMobile ? 300 : 350;
 
   renderData = getData();
+  // console.log("renderData", data.graphInstance.root);
 
-  functionPlot({
+
+  data.graphInstance = functionPlot({
     target: "#chart",
     title: "Calculation",
     grid: true,
