@@ -355,18 +355,20 @@ function handleRadio(target) {
 
 function render(target, val) {
   if (target) handleRadio(target);
-
+  
+  //chart width
+  const isMobile = data.screen.width < 600;
   const makeWider = xMax + 0.2,
-    height = data.screen.height / 1.5;
+    height = !isMobile ? 400 : 350;
+
   renderData = getData();
-  // console.log("data", renderData);
 
   functionPlot({
     target: "#chart",
     title: "Calculation",
     grid: true,
     height: height,
-    width: height,
+    width: height * 1.2,
     // disableZoom: true,
     xAxis: {
       label: "x",

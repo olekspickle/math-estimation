@@ -33,10 +33,12 @@
 </head>
 
 <body>
-    <a href="https://github.com/alexgnatrow/math-estimation">
-        <img alt="github icon" src="assets/github.svg">
-    </a>
-    <h1>Lets do some math, shall we?</h1>
+    <header>
+        <h1>Lets do some math, shall we?</h1>
+        <a href="https://github.com/alexgnatrow/math-estimation">
+            <img alt="github icon" src="assets/github.svg">
+        </a>
+    </header>
     <nav>
         <ul>
             <li>
@@ -62,7 +64,7 @@
             </li>
         </ul>
         <h4>Sample <span id="sample">1</span> from <span id="samples">1</span></h4>
-        <ul>
+        <ul class="row">
             <li>
                 <button id="previous" onclick="handlePreviousSample()" type="button" name="previus"><</button>
             </li>
@@ -87,7 +89,12 @@
                         <label>
                             &#956;
                             <input id="mu" type="number" step="0.01" placeholder="0" name="mu" maxlength="100" />
-                        </label></div>
+                        </label>
+                        <label>
+                            &#945; (alfa)
+                            <input id="alfa" type="number" step="0.001" placeholder="0" name="alfa" maxlength="100" />
+                        </label>
+                    </div>
                     <div>
                         <label>
                             sample number(N)
@@ -97,10 +104,6 @@
                             q-ty(n)
                             <input id="n" type="number" placeholder="0" name="n" maxlength="100" />
                         </label></div>
-                    <label>
-                        &#945; (alfa)
-                        <input id="alfa" type="number" step="0.001" placeholder="0" name="alfa" maxlength="100" />
-                    </label>
                     <button name="generate" type="sumbit">generate</button>
                 </form>
                 <button name="calculate" onclick="handleCalculate()" type="button">calculate </button>

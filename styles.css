@@ -1,7 +1,9 @@
 body {
   font-family: Roboto, Oxygen, Ubuntu, "Helvetica Neue", sans-serif;
 }
-
+header {
+  position: relative;
+}
 h1 {
   text-align: center;
 }
@@ -89,6 +91,7 @@ section h2 {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin-bottom: 10px;
 }
 #forms form button,
 #forms button {
@@ -139,14 +142,12 @@ iframe {
 
 a {
   position: absolute;
-  top: 10px;
+  top: 0px;
   right: 0px;
 }
 a img {
   width: 10%;
 }
-
-
 
 /* CUSTOM RADIO BUTTONS*/
 /* The container */
@@ -188,7 +189,7 @@ a img {
 
 /* When the radio button is checked, add a blue background */
 .label input:checked ~ .check {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -205,10 +206,32 @@ a img {
 
 /* Style the indicator (dot/circle) */
 .label .check:after {
- top: 9px;
-left: 9px;
-width: 8px;
-height: 8px;
-border-radius: 50%;
-background: white;
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+.row {
+  flex-direction: row;
+}
+@media (max-width: 1330px) {
+  a {
+    top: 50px;
+    width: 9%;
+  }
+  a img {
+    width: 100%;
+  }
+}
+@media (max-width: 780px) {
+  #forms form label input {
+    padding: 2px;
+    margin: 2px;
+  }
+  nav ul {
+    flex-direction: column;
+  }
 }
