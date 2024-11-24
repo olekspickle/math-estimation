@@ -142,36 +142,54 @@ function getInterval(arr, i) {
       gamma(nOfN / 2) *
       Math.pow(1 + Math.pow(avg, 2), (nOfN + 1) / 2));
 
-  let lowPrelim = avg - (S * t) / Math.sqrt(nOfN);
-  let highPrelim = avg + (S * t) / Math.sqrt(nOfN);
+  let lowPrelim = (avg - (S * t) / Math.sqrt(nOfN)).toFixed(10);
+  let highPrelim = (avg + (S * t) / Math.sqrt(nOfN)).toFixed(10);
+  let low = lowPrelim.substring(0, lowPrelim.length - 5);
+  let high = highPrelim.substring(0, highPrelim.length - 5);
 
-  //parse to float that javascript can handle
-  let low = `${lowPrelim}`.substring(0, 10);
-  let high = `${highPrelim}`.substring(0, 10);
-
-  low = `${+low + avg}`;
-  high = `${+high + avg}`;
+  // console.log("low", low, "high", high);
+  const numAvg = Number(`${avg}`.substring(0, 10));
+  low = `${Number(low) + numAvg}`;
+  high = `${Number(high) + numAvg}`;
+  // console.log("low", low, "high", high, "numAvg", numAvg);
 
   // console.log("avg, sqSum, S, t", avg, sqSum, S, t, 'nothing', (S * t) / Math.sqrt(nOfN));
-  console.log("low, high", low, high, "nothing", (S * t) / Math.sqrt(nOfN));
+  // console.log(
+  //   i,
+  //   "low, high",
+  //   numberify(low, true),
+  //   numberify(high, true),
+  //   "nothing",
+  //   (S * t) / Math.sqrt(nOfN)
+  // );
   // console.log("low", low, "high", high);
 
   return [numberify(low), numberify(high)];
 }
-function numberify(el) {
+
+function numberify(el, consoled) {
+  let isNegative = el[0] === "-";
   const index = el.indexOf(".");
-  if (index === 1) {
-    return +el;
+  if (
+    (isNegative && (index === 2 || index === 3)) ||
+    index === 1 ||
+    index === 2
+  ) {
+    return Number(el);
   } else if (index === -1) {
-    const first = el.substring(0, 1);
-    const other = el.slice(1);
-    return +(first + "." + other);
+    if (consoled) {
+      console.log("HERE GOES WRONG", el);
+    }
+    const string = (isNegative && el.slice(1)) || el;
+    const first = string.substring(0, 1);
+    const other = string.slice(1);
+    return Number(`${(isNegative && "-") || ""}${first}.${other}`);
   } else {
-    el[index] = "0";
-    const arr = el.split(".").join("");
+    const string = (isNegative && el.slice(1)) || el;
+    const arr = string.split(".").join("");
     const first = arr.substring(0, 1);
     const other = arr.slice(1);
-    return +(first + "." + other);
+    return Number(`${(isNegative && "-") || ""}${first}.${other}`);
   }
 }
 
@@ -220,7 +238,9 @@ function handleCalculate() {
   pointEstimations = [];
   intervalEstimations = [];
   pointEstimations = getStaticPointEstimates();
+  console.log("intervalEstimations", intervalEstimations);
   intervalEstimations = getStaticIntervalEstimates();
+  console.log("intervalEstimations", intervalEstimations);
   fillCalculatedTable(pointEstimations);
   render();
 }
@@ -251,12 +271,12 @@ function refreshData() {
     samples: document.getElementById("samples")
   };
 
-  nav.sample.innerHTML = 0;
-  (currentN = 0),
-    (xMax = 8),
-    (yMax = 0.6),
-    (renderData = []),
-    (N = data.quantity);
+  nav.sample.innerHTML = 1;
+  currentN = 0;
+  xMax = 8;
+  yMax = 0.6;
+  renderData = [];
+  N = data.quantity;
   nOfN = data.n;
   sigm = data.sigma;
   mu = data.mu;
