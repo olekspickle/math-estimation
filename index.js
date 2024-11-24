@@ -149,13 +149,30 @@ function getInterval(arr, i) {
   let low = `${lowPrelim}`.substring(0, 10);
   let high = `${highPrelim}`.substring(0, 10);
 
-  low = `${+low + avg}`
-  high = `${+high + avg}`
+  low = `${+low + avg}`;
+  high = `${+high + avg}`;
+
   // console.log("avg, sqSum, S, t", avg, sqSum, S, t, 'nothing', (S * t) / Math.sqrt(nOfN));
-  console.log("low, high",low, high, 'nothing', (S * t) / Math.sqrt(nOfN));
+  console.log("low, high", low, high, "nothing", (S * t) / Math.sqrt(nOfN));
   // console.log("low", low, "high", high);
 
-  return [+low, +high];
+  return [numberify(low), numberify(high)];
+}
+function numberify(el) {
+  const index = el.indexOf(".");
+  if (index === 1) {
+    return +el;
+  } else if (index === -1) {
+    const first = el.substring(0, 1);
+    const other = el.slice(1);
+    return +(first + "." + other);
+  } else {
+    el[index] = "0";
+    const arr = el.split(".").join("");
+    const first = arr.substring(0, 1);
+    const other = arr.slice(1);
+    return +(first + "." + other);
+  }
 }
 
 //===================================CALCULATIONS=============================================<
