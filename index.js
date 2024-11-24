@@ -48,6 +48,7 @@ let data = {
   tableDiv: document.getElementById("table"),
   samples: document.getElementById("samples")
 };
+console.log(data.caption);
 const chart = document.getElementById("chart");
 //==============================CANVAS===============================================>
 
@@ -137,9 +138,8 @@ function getInterval(arr, i) {
   //S(x) - unshifted variance estimate
   const S = sqSum / (nOfN - 1);
   //T(x)
-  const currentAlpfaIndex = alfaArray.indexOf(alfa)
-  console.log('currentAlpfaIndex', currentAlpfaIndex)
-  const t = tArray[nOfN][currentAlpfaIndex]
+  const currentAlpfaIndex = alfaArray.indexOf(alfa);
+  const t = tArray[nOfN][currentAlpfaIndex];
   // const t =
   //   gamma((nOfN + 1) / 2) /
   //   (Math.sqrt(nOfN * Math.PI) *
@@ -293,11 +293,13 @@ function refreshData() {
       width: window.innerWidth,
       height: window.innerHeight
     },
+    graphInstance: {},
     sigma: document.getElementById("sigma")["value"],
     mu: document.getElementById("mu")["value"],
     quantity: document.getElementById("quantity")["value"],
     n: document.getElementById("n")["value"],
     alfa: Number(document.getElementById("alfa")["value"]),
+    caption: document.getElementById("caption"),
     table: document.getElementsByTagName("table")[0],
     tableDiv: document.getElementById("table"),
     samples: document.getElementById("samples")
@@ -341,7 +343,7 @@ function fillTable(arr) {
   if (!arr.length || !arr[0].length) return;
   const outerLength = arr.length;
   const innerLength = arr[0].length;
-  const caption = data.table.caption;
+  const caption = data.caption;
 
   for (let i = 0; i < outerLength; i++) {
     const tr = data.table.tHead.children[0],
@@ -364,7 +366,7 @@ function fillTable(arr) {
 function fillCalculatedTable(arr) {
   if (!arr.length) return;
   const length = arr.length;
-  const caption = data.table.caption;
+  const caption = data.caption;
 
   for (let i = 0; i < length; i++) {
     const tr = data.table.tHead.children[0],

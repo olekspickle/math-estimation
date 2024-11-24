@@ -28,6 +28,11 @@ header {
 h1 {
   text-align: center;
 }
+h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+  text-align: center;
+}
 h4 {
   text-align: center;
   margin: 0;
@@ -236,17 +241,20 @@ main table {
 main table tr,
 main table th {
   font-weight: var(--table-header-font-weight);
-  background: var(--table-bg);
+  background: var(--white);
   text-align: center;
   border-width: 50%;
   border-bottom: 2px solid var(--table-border-color);
 }
-
-main table caption {
-  font-size: 1.5em;
-  font-weight: 600;
+main table th {
+  background: var(--table-bg);
+  border-right: 2px solid var(--black);
+  border-top: 4px solid var(--table-bg);
+  border-bottom: 4px solid var(--table-bg);
 }
+
 main td:hover {
+  border-radius: 12px;
   background: var(--table-bg-hover);
 }
 main td,
