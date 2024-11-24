@@ -245,6 +245,7 @@ a:hover{
 #chart {
   text-align: center;
 }
+
 /* CUSTOM RADIO BUTTONS*/
 /* The container */
 .label {
@@ -430,7 +431,13 @@ select:focus ~ label {
   border-top: 0.375em solid var(--select-border-color);
   pointer-events: none;
 }
-/**************************MATERIAL SELECT**********************************/
+
+/* hide arrows for number inputs hack */
+input[type="number"] {
+  margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
 
 /***************************HIGHLIGHTER ************************************/
 .highlight {
