@@ -44,13 +44,14 @@ nav ul li,
   border: 2px solid #6ff;
   color: #0fb3ff;
 }
-.controls{
+.controls {
   padding-top: 10px;
 }
 section {
   padding-top: 1%;
   border: solid 2px #0fb3ff;
-  width: 37%;
+  width: 67%;
+  text-align: center;
   margin: 0 auto;
 }
 main h2 {
@@ -111,7 +112,7 @@ main h2 {
   font-weight: 600;
   position: absolute;
   pointer-events: none;
-  text-align:center;
+  text-align: center;
   left: 25px;
   top: -15px;
   transition: 0.2s ease all;
@@ -148,6 +149,9 @@ main h2 {
 #forms button:focus {
   background-color: #0fb3ff88;
   transition: 0.5s;
+}
+canvas {
+  margin: 10px auto;
 }
 .buttons {
   display: flex;
