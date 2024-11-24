@@ -1,0 +1,8 @@
+h1 {
+  text-align: center;
+}
+ul {
+  display: flex;
+  list-style-type: none;
+  flex-direction: row;
+}
