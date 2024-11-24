@@ -128,6 +128,8 @@ function refreshTable() {
 }
 
 function fillTable(arr) {
+  if (!arr.length || !arr[0].length) return;
+
   const outerLength = arr.length;
   const innerLength = arr[0].length;
 
@@ -148,6 +150,7 @@ function fillTable(arr) {
 
 function getData() {
   let data1, data2;
+
   if (nav.radio[0]["checked"]) {
     data1 = {
       fn: `(1 / (${sigm} * sqrt(2 * PI))) * exp((-1 * (x-${mu}) ^ 2) / (2 * 1^ 2))`,
@@ -159,8 +162,9 @@ function getData() {
       fnType: "points",
       color: "#8134f8"
     };
-    if (!generatedNumbers.length) return [data1];
+    if (N === 0 || !generatedNumbers.length) return [data1];
     return [data1, data2];
+    
   } else if (nav.radio[1]["checked"]) {
     data1 = {
       fn: `(1 / (${0.5 * sigm} * sqrt(2 * PI))) * exp((-1 * (x-${0.4 *
