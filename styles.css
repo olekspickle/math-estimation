@@ -232,8 +232,15 @@ a {
   top: 0px;
   right: 0px;
 }
+
 a img {
   width: 10%;
+}
+a:hover{
+  opacity: 0.6;
+  transform: scale(1.1);
+  transform: translateY(-10px);
+  transition: 0.5s;
 }
 #chart {
   text-align: center;
