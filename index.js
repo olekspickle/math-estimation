@@ -30,6 +30,10 @@ const nav = {
   radio: document.getElementsByName("chart")
 };
 let data = {
+  screen: {
+    width: window.innerWidth,
+    height: window.innerHeight
+  },
   sigma: document.getElementById("sigma")["value"],
   mu: document.getElementById("mu")["value"],
   quantity: document.getElementById("quantity")["value"],
@@ -197,6 +201,10 @@ function refreshCoordinates() {
 
 function refreshData() {
   data = {
+    screen: {
+      width: window.innerWidth,
+      height: window.innerHeight
+    },
     sigma: document.getElementById("sigma")["value"],
     mu: document.getElementById("mu")["value"],
     quantity: document.getElementById("quantity")["value"],
@@ -348,7 +356,8 @@ function handleRadio(target) {
 function render(target, val) {
   if (target) handleRadio(target);
 
-  const makeWider = xMax + 0.2;
+  const makeWider = xMax + 0.2,
+    height = data.screen.height / 1.5;
   renderData = getData();
   // console.log("data", renderData);
 
@@ -356,7 +365,8 @@ function render(target, val) {
     target: "#chart",
     title: "Calculation",
     grid: true,
-    height: 400,
+    height: height,
+    width: height,
     // disableZoom: true,
     xAxis: {
       label: "x",
