@@ -38,18 +38,18 @@
         <ul>
             <li>
 
-                <label><input name="chart" type="radio" value="standart" />Wykres rozkladu</label>
+                <label><input name="chart" type="radio" value="standart" />Show chart</label>
             </li>
             <li>
 
-                <label><input name="chart" type="radio" value="first" />Wykres estymatorow</label>
+                <label><input name="chart" type="radio" value="first" />Show evaluation estimation</label>
             </li>
             <li>
 
-                <label><input name="chart" type="radio" value="second" />Wszystkie przedialy ufnosci</label>
+                <label><input name="chart" type="radio" value="second" />Show all evaluations</label>
             </li>
         </ul>
-        <h4>Losowanie 1 z <span id="samples">1</span></h4>
+        <h4>Sample <span id="sample">1</span> from <span id="samples">1</span></h4>
         <ul>
             <li>
                 <button id="previous" onclick="handlePreviousSample()" type="button" name="previus"><</button>
@@ -67,11 +67,11 @@
                     <div>
                         <label>
                             &sigma;
-                            <input id="sigma" type="number" step="0.0001" placeholder="0" name="sigma" maxlength="100" />
+                            <input id="sigma" type="number" step="0.01" placeholder="0" name="sigma" maxlength="100" />
                         </label>
                         <label>
                             &#956;
-                            <input id="mu" type="number" step="0.0001" placeholder="0" name="mu" maxlength="100" />
+                            <input id="mu" type="number" step="0.01" placeholder="0" name="mu" maxlength="100" />
                         </label></div>
                     <div>
                         <label>
