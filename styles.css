@@ -317,7 +317,7 @@ a:hover{
   flex-direction: row;
 }
 
-@media (min-width: 1500px) {
+@media (min-width: 1330px) {
   a {
     right: -10em;
   }
